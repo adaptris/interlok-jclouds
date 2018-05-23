@@ -1,0 +1,3 @@
+rootProject.name = 'interlok-jclouds'
+include 'interlok-jclouds-blobstore'
+
