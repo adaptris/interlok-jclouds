@@ -18,7 +18,9 @@ package com.adaptris.jclouds.blobstore;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceCase;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -53,6 +55,24 @@ public class BlobStoreServiceTest extends ServiceCase {
 
   public BlobStoreServiceTest(String name) {
     super(name);
+  }
+
+  public void testLifecycle() throws Exception {
+    BlobStoreService service = new BlobStoreService();
+    try {
+      LifecycleHelper.init(service);
+      fail();
+    } catch (CoreException expected) {
+
+    }
+    service.setConnection(OperationCase.createConnection());
+    service.setOperation(new Upload("container", "name"));
+    try {
+      LifecycleHelper.initAndStart(service);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+
   }
 
   @Override

@@ -20,9 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 
@@ -105,9 +103,7 @@ public class Download extends OperationImpl {
       log.trace("Initialising Message from {}", f.getCanonicalPath());
       ((FileBackedMessage) msg).initialiseFrom(f);
     } else {
-      try (FileInputStream in = new FileInputStream(f); OutputStream out = msg.getOutputStream()) {
-        IOUtils.copy(in, out);
-      }
+      StreamUtil.copyAndClose(new FileInputStream(f), msg.getOutputStream());
     }
   }
 

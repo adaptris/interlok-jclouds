@@ -31,7 +31,7 @@ public abstract class OperationCase {
   @Rule
   public TestName testName = new TestName();
 
-  protected BlobStoreConnection createConnection() throws Exception {
+  public static BlobStoreConnection createConnection() throws Exception {
     KeyValuePairSet config = new KeyValuePairSet();
     config.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, TempFileUtils.createTrackedDir(config).getCanonicalPath()));
     BlobStoreConnection c = new BlobStoreConnection("filesystem", config);

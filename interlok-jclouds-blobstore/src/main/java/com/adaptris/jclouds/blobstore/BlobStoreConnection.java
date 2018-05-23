@@ -24,10 +24,15 @@ import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -46,11 +51,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("jclouds-blobstore-connection")
+@DisplayOrder(order =
+{
+    "provider", "identity", "credentials"
+})
 public class BlobStoreConnection extends AdaptrisConnectionImp {
 
   @NotBlank
   private String provider;
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String identity;
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String credentials;
   @AdvancedConfig
   private KeyValuePairSet configuration;
@@ -90,12 +101,17 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
 
   @Override
   protected void initConnection() throws CoreException {
-    ContextBuilder builder = ContextBuilder.newBuilder(getProvider());
-    builder.overrides(KeyValuePairBag.asProperties(overrideConfiguration()));
-    if (isNotBlank(getCredentials()) || isNotBlank(getIdentity())) {
-      builder.credentials(getIdentity(), getCredentials());
+    try {
+      ContextBuilder builder = ContextBuilder.newBuilder(getProvider());
+      builder.overrides(KeyValuePairBag.asProperties(overrideConfiguration()));
+      if (isNotBlank(getCredentials()) || isNotBlank(getIdentity())) {
+        builder.credentials(Password.decode(ExternalResolver.resolve(getIdentity())),
+            Password.decode(ExternalResolver.resolve(getCredentials())));
+      }
+      context = builder.buildView(BlobStoreContext.class);
+    } catch (PasswordException e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    context = builder.buildView(BlobStoreContext.class);
   }
 
   @Override

@@ -15,16 +15,21 @@
 */
 package com.adaptris.jclouds.blobstore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
+import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 
 public class ConnectionTest extends OperationCase {
 
@@ -39,6 +44,17 @@ public class ConnectionTest extends OperationCase {
 
   }
 
+  @Test
+  public void testConfiguration() throws Exception {
+    BlobStoreConnection con = new BlobStoreConnection();
+    assertNotNull(con.overrideConfiguration());
+    assertEquals(0, con.overrideConfiguration().size());
+    KeyValuePairSet cfg = new KeyValuePairSet();
+    cfg.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, "/tmp"));
+    con.setConfiguration(cfg);
+    assertNotNull(con.overrideConfiguration());
+    assertEquals(cfg, con.overrideConfiguration());
+  }
 
   @Test
   public void testConnection() throws Exception {
