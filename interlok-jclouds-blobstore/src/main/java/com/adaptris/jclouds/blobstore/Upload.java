@@ -15,13 +15,17 @@
 */
 package com.adaptris.jclouds.blobstore;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.blobstore.domain.BlobBuilder.PayloadBlobBuilder;
 import org.jclouds.blobstore.options.PutOptions;
+import org.jclouds.blobstore.strategy.internal.MultipartUploadSlicingAlgorithm;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.util.ExceptionHelper;
@@ -40,6 +44,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class Upload extends OperationImpl {
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "true")
+  private Boolean useMultipart;
+
+  // see MultipartUploadSlicingAlgorithm
+
   public Upload() {
 
   }
@@ -57,7 +67,7 @@ public class Upload extends OperationImpl {
       String name = msg.resolve(getName());
       BlobStore store = conn.getBlobStore(container);
       Blob blob = build(store.blobBuilder(name), msg);
-      store.putBlob(container, blob, PutOptions.Builder.multipart());
+      store.putBlob(container, blob, buildPutOptions(store, msg));
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -73,5 +83,38 @@ public class Upload extends OperationImpl {
     payloadBuilder.contentLength(msg.getSize());
     Blob blob = builder.build();
     return blob;
+  }
+  
+  private PutOptions buildPutOptions(BlobStore store, AdaptrisMessage msg) {
+    PutOptions result = PutOptions.NONE;
+    if (atLeastTwoParts(store, msg.getSize())) {
+      result = PutOptions.Builder.multipart(BooleanUtils.toBooleanDefaultIfNull(getUseMultipart(), true));
+    } else {
+      log.trace("Message of size {} probably won't benefit from a multipart-upload", msg.getSize());
+    }
+    return result;
+  }
+
+  private boolean atLeastTwoParts(BlobStore store,  long msgSize) {
+    // Testing with backblaze, if you enable multiparts, and you're only uploading a small
+    // file, it complains as it wants at least 2 parts.
+    // AWS-S3 doesn't seem to care.
+    MultipartUploadSlicingAlgorithm slicer = new MultipartUploadSlicingAlgorithm(store.getMinimumMultipartPartSize(),
+        store.getMaximumMultipartPartSize(), store.getMaximumNumberOfParts());
+    slicer.calculateChunkSize(msgSize);
+    return slicer.getParts() > 1;
+  }
+
+  public Boolean getUseMultipart() {
+    return useMultipart;
+  }
+
+  /**
+   * Whether or not to use multiparts when uploading.
+   * 
+   * @param b true or false, defaults to true if not specified.
+   */
+  public void setUseMultipart(Boolean b) {
+    this.useMultipart = b;
   }
 }
