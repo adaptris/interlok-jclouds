@@ -18,6 +18,7 @@ package com.adaptris.jclouds.blobstore;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
+import org.jclouds.blobstore.domain.BlobBuilder.PayloadBlobBuilder;
 import org.jclouds.blobstore.options.PutOptions;
 
 import com.adaptris.annotation.DisplayOrder;
@@ -63,11 +64,14 @@ public class Upload extends OperationImpl {
   }
 
   private Blob build(BlobBuilder builder, AdaptrisMessage msg) throws Exception {
+    PayloadBlobBuilder payloadBuilder = null;
     if (msg instanceof FileBackedMessage) {
-      builder.payload(((FileBackedMessage) msg).currentSource());
+      payloadBuilder = builder.payload(((FileBackedMessage) msg).currentSource());
     } else {
-      builder.payload(msg.getInputStream());
+      payloadBuilder =  builder.payload(msg.getInputStream());
     }
-    return builder.build();
+    payloadBuilder.contentLength(msg.getSize());
+    Blob blob = builder.build();
+    return blob;
   }
 }
