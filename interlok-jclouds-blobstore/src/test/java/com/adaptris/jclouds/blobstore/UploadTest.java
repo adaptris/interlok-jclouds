@@ -15,7 +15,9 @@
 */
 package com.adaptris.jclouds.blobstore;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
@@ -39,6 +41,20 @@ public class UploadTest extends OperationCase {
   @After
   public void tearDown() throws Exception {
 
+  }
+
+  @Test
+  public void testSetters() throws Exception {
+    Upload upload = new Upload();
+    assertNull(upload.getUseMultipart());
+    upload.setUseMultipart(true);
+    assertEquals(true, upload.getUseMultipart());
+    assertNull(upload.getContainerName());
+    upload.setContainerName("hello");
+    assertEquals("hello", upload.getContainerName());
+    assertNull(upload.getName());
+    upload.setName("world");
+    assertEquals("world", upload.getName());
   }
 
   @Test

@@ -95,7 +95,7 @@ public class Upload extends OperationImpl {
     return result;
   }
 
-  private boolean atLeastTwoParts(BlobStore store,  long msgSize) {
+  private boolean atLeastTwoParts(BlobStore store, long msgSize) {
     // Testing with backblaze, if you enable multiparts, and you're only uploading a small
     // file, it complains as it wants at least 2 parts.
     // AWS-S3 doesn't seem to care.

@@ -121,6 +121,7 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
 
   @Override
   protected void stopConnection() {
+    // nothing to do.
   }
 
   @Override
