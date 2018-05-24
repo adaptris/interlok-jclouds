@@ -32,6 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * 
+ * Perform an operation against a cloud storage provider.
+ * 
  * @config jclouds-blobstore-service
  *
  */
@@ -108,6 +110,11 @@ public class BlobStoreService extends ServiceImp implements ConnectedService {
     return operation;
   }
 
+  /**
+   * Set the operation you want to perform.
+   * 
+   * @param operation the operation, generally one of {@link Upload}, {@link Download}, or {@link Remove}
+   */
   public void setOperation(Operation operation) {
     this.operation = operation;
   }

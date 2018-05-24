@@ -36,10 +36,10 @@ public abstract class OperationImpl implements Operation {
   /**
    * Set the name of the object to manipulate.
    * 
-   * @param key
+   * @param s the name of the object.
    */
-  public void setName(String key) {
-    this.name = Args.notBlank(key, "key");
+  public void setName(String s) {
+    this.name = Args.notBlank(s, "key");
   }
 
   public String getContainerName() {

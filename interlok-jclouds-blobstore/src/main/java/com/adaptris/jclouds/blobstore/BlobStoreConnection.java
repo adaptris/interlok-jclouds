@@ -42,8 +42,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * You will need to also have one of the <a href="https://jclouds.apache.org/reference/providers/#blobstore">supported providers</a>
- * in your classpath to be able to use this connection. {@code identity} and {@code credentials} are not mandatory, and it is left
- * to the underlying provider to make a choice about what credentials will be used to access cloud storage.
+ * in your classpath to be able to use this connection. Use the associated provider in your configuration. Note that
+ * {@code identity} and {@code credentials} are not mandatory (and could be overriden via {@link #setConfiguration(KeyValuePairSet)}
+ * or system properties). If not explicitly configured, then those values are left to the underlying provider to make a choice about
+ * what credentials will be used to access cloud storage (for the aws-s3 provider, it will always fail if no identity/credentials
+ * are provided as it doesn't use the java AWS SDK to handle authentication).
  * </p>
  * </p>
  * 
