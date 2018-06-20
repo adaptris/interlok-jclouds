@@ -46,6 +46,9 @@ publishing {
         asNode().appendNode("description", "Use Apache jclouds to access your cloud storage")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.7.3+")
+        properties.appendNode("tags", "s3,backblaze,azure blob,google cloud storage,rackspace")
+        properties.appendNode("license", "false")
+        properties.appendNode("externalUrl", "https://jclouds.apache.org/")
       }
     }
   }
