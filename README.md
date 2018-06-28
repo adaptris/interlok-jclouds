@@ -1,4 +1,4 @@
-# interlok-jclouds
+# interlok-jclouds [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-jclouds.svg)](https://github.com/adaptris/interlok-jclouds/tags) [![Build Status](https://travis-ci.org/adaptris/interlok-jclouds.svg?branch=develop)](https://travis-ci.org/adaptris/interlok-jclouds) [![codecov](https://codecov.io/gh/adaptris/interlok-jclouds/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok-jclouds) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/686607b642ec4fffb630b96c1024034a)](https://www.codacy.com/app/adaptris/interlok-jclouds?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adaptris/interlok-jclouds&amp;utm_campaign=Badge_Grade)
 The suggested name was `fantastic-train`
 
 This provides interlok services based around apache jclouds (https://jclouds.apache.org). Initially for the BlobStore capability allowing you to use this to access backblaze/aws-s3/azure easily.
