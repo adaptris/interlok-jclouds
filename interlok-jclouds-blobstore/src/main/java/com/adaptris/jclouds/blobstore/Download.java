@@ -20,7 +20,10 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 
@@ -30,7 +33,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
-import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -77,7 +79,9 @@ public class Download extends OperationImpl {
   private void tryGetBlob(BlobStore store, String container, String name, AdaptrisMessage msg)
       throws InterlokException, IOException {
     Blob blob = store.getBlob(container, name);
-    StreamUtil.copyAndClose(blob.getPayload().openStream(), msg.getOutputStream());
+    try (InputStream in = blob.getPayload().openStream(); OutputStream out = msg.getOutputStream()) {
+      IOUtils.copy(in, out);
+    }
   }
 
   private boolean tryDownloadBlob(BlobStore store, String container, String name, AdaptrisMessage msg)
@@ -103,7 +107,9 @@ public class Download extends OperationImpl {
       log.trace("Initialising Message from {}", f.getCanonicalPath());
       ((FileBackedMessage) msg).initialiseFrom(f);
     } else {
-      StreamUtil.copyAndClose(new FileInputStream(f), msg.getOutputStream());
+      try (InputStream in = new FileInputStream(f); OutputStream out = msg.getOutputStream()) {
+        IOUtils.copy(in, out);
+      }
     }
   }
 
