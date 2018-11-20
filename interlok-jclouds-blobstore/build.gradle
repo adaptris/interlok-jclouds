@@ -4,7 +4,7 @@ ext {
 
 dependencies {
   compile "org.apache.jclouds:jclouds-blobstore:2.1.1"
-  compile "com.google.guava:guava:27.0-jre"
+  compile "com.google.guava:guava:27.0.1-jre"
   testCompile "org.apache.jclouds.api:filesystem:2.1.1"
 }
 
