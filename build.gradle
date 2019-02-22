@@ -18,6 +18,7 @@ ext {
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.26'
+  log4j2Version = '2.11.2'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -86,9 +87,9 @@ subprojects {
     annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing=true}
     testCompile ('junit:junit:4.12')
     testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
-    testCompile ("org.apache.logging.log4j:log4j-core:2.8.1")
-    testCompile ("org.apache.logging.log4j:log4j-1.2-api:2.8.1")
-    testCompile ("org.apache.logging.log4j:log4j-api:2.8.1")
+    testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
+    testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
+    testCompile ("org.apache.logging.log4j:log4j-api:$log4j2Version")
 
     javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
     offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
