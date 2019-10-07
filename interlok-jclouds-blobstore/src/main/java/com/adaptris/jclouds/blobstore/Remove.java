@@ -16,7 +16,7 @@
 package com.adaptris.jclouds.blobstore;
 
 import org.jclouds.blobstore.BlobStore;
-
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.ExceptionHelper;
@@ -29,10 +29,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jclouds-blobstore-remove
  */
 @XStreamAlias("jclouds-blobstore-remove")
-@DisplayOrder(order =
-{
-    "containerName", "name",
-})
+@DisplayOrder(order = {"containerName", "name",})
+@ComponentProfile(summary = "Remove a BLOB", tag = "jclouds")
 public class Remove extends OperationImpl {
 
   public Remove() {

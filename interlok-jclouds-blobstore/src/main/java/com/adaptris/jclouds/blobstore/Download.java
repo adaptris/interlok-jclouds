@@ -16,24 +16,24 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
-
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Download an object.
@@ -41,12 +41,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jclouds-blobstore-download
  */
 @XStreamAlias("jclouds-blobstore-download")
-@DisplayOrder(order =
-{
-    "containerName", "name", "tempDirectory"
-})
+@DisplayOrder(order = {"containerName", "name", "tempDirectory"})
+@ComponentProfile(summary = "Download a blob", tag = "jclouds")
 public class Download extends OperationImpl {
 
+  /**
+   * Set the temp directory to store files, if not specified defaults to {@code java.io.tmpdir}
+   */
+  @Getter
+  @Setter
   @AdvancedConfig
   private String tempDirectory;
 
@@ -111,22 +114,6 @@ public class Download extends OperationImpl {
         IOUtils.copy(in, out);
       }
     }
-  }
-
-  /**
-   * @return the tempDirectory
-   */
-  public String getTempDirectory() {
-    return tempDirectory;
-  }
-
-  /**
-   * Set the temp directory to store files.
-   * 
-   * @param s the tempDirectory to set, if not specified defaults to {@code java.io.tmpdir}
-   */
-  public void setTempDirectory(String s) {
-    this.tempDirectory = s;
   }
 
 }
