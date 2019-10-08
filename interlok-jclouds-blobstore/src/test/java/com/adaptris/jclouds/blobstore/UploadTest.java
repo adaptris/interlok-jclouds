@@ -22,8 +22,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import com.adaptris.core.AdaptrisMessage;
@@ -32,17 +30,6 @@ import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class UploadTest extends OperationCase {
-
-
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-
-  }
 
   @Test
   public void testSetters() throws Exception {

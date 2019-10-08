@@ -25,8 +25,6 @@ import java.nio.charset.Charset;
 import java.util.EnumSet;
 import org.apache.commons.io.FileUtils;
 import org.jclouds.blobstore.BlobStore;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import com.adaptris.core.AdaptrisMessage;
@@ -41,17 +39,6 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
 
 public class DownloadTest extends OperationCase {
-
-
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-
-  }
 
   @Test
   public void testDownload() throws Exception {

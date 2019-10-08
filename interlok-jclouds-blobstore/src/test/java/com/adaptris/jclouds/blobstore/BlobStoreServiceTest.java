@@ -27,14 +27,24 @@ public class BlobStoreServiceTest extends ServiceCase {
   private static final String HYPHEN = "-";
 
   private enum OperationsBuilder {
-
-    Download {
+    Copy {
       @Override
       Operation build() {
-        return new Download().withTempDirectory("/path/to/temp/dir/if/required").withContainerName("s3-bucket")
+        return new Copy()
+            .withDestinationContainerName("s3-target-bucket")
+            .withDestinationName("%message{s3-target-key}")
+            .withContainerName("s3-src-bucket")
             .withName("%message{s3-key}");
       }
       
+    },
+    Download {
+      @Override
+      Operation build() {
+        return new Download().withTempDirectory("/path/to/temp/dir/if/required")
+            .withContainerName("s3-bucket").withName("%message{s3-key}");
+      }
+
     },
     Remove {
       @Override

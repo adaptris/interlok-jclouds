@@ -15,36 +15,33 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.jclouds.blobstore.BlobStore;
-import org.jclouds.blobstore.BlobStoreContext;
-import org.jclouds.blobstore.domain.BlobBuilder;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class RemoveTest extends OperationCase {
+public class CopyTest extends OperationCase {
 
 
   @Test
-  public void testDownload() throws Exception {
+  public void testCopy() throws Exception {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
+    String destName = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Remove().withContainerName(container).withName(name));
+    BlobStoreService service =
+        new BlobStoreService(con,
+            new Copy().withDestinationName(destName).withDestinationContainerName(container)
+                .withContainerName(container).withName(name));
     try {
       LifecycleHelper.initAndStart(service);
-      BlobStoreContext ctx = con.getBlobStoreContext();
-      // Create the container first before running the service.
-      BlobStore store = ctx.getBlobStore();
-      store.createContainerInLocation(null, container);
-      BlobBuilder builder = store.blobBuilder(name);
-      builder.payload("hello world");
-      store.putBlob(container, builder.build());
+      createBlob(con.getBlobStoreContext(), container, name, "hello world");
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
       service.doService(msg);
-      assertFalse(store.blobExists(container, name));
+      BlobStore store = con.getBlobStoreContext().getBlobStore();
+      assertTrue(store.blobExists(container, destName));
     } finally {
       LifecycleHelper.stopAndClose(service);
     }
