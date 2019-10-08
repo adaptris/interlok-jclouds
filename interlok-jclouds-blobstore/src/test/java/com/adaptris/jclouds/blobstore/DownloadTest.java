@@ -45,7 +45,8 @@ public class DownloadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Download().withContainerName(container).withName(name));
+    BlobStoreService service =
+        new BlobStoreService(con, new Download().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
@@ -66,7 +67,7 @@ public class DownloadTest extends OperationCase {
     BlobStoreConnection con = createConnection();
     BlobStoreService service =
         new BlobStoreService(con,
-            new OverrideDownloadBlob("hello world").withContainerName(container).withName(name));
+            new OverrideDownloadBlob("hello world").withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
@@ -86,7 +87,7 @@ public class DownloadTest extends OperationCase {
     BlobStoreService service =
         new BlobStoreService(con,
             new Download().withTempDirectory(FileUtils.getTempDirectoryPath())
-                .withContainerName(container).withName(name));
+                .withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
@@ -121,7 +122,7 @@ public class DownloadTest extends OperationCase {
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
     BlobStoreService service =
-        new BlobStoreService(con, new Download().withContainerName(container).withName(name));
+        new BlobStoreService(con, new Download().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");

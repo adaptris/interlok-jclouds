@@ -32,7 +32,8 @@ public class RemoveTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Remove().withContainerName(container).withName(name));
+    BlobStoreService service =
+        new BlobStoreService(con, new Remove().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();

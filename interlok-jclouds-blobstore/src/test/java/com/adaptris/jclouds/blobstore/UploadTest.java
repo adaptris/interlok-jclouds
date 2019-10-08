@@ -50,7 +50,8 @@ public class UploadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Upload().withContainerName(container).withName(name));
+    BlobStoreService service =
+        new BlobStoreService(con, new Upload().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
@@ -70,7 +71,8 @@ public class UploadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Upload().withContainerName(container).withName(name));
+    BlobStoreService service =
+        new BlobStoreService(con, new Upload().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();

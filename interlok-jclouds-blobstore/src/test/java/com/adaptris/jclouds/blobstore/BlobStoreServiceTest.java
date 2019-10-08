@@ -27,14 +27,21 @@ public class BlobStoreServiceTest extends ServiceCase {
   private static final String HYPHEN = "-";
 
   private enum OperationsBuilder {
+    List {
+      @Override
+      Operation build() {
+        return new ListOperation()
+            .withContainerName("s3-bucket");
+      }
+
+    },
     Copy {
       @Override
       Operation build() {
         return new Copy()
             .withDestinationContainerName("s3-target-bucket")
             .withDestinationName("%message{s3-target-key}")
-            .withContainerName("s3-src-bucket")
-            .withName("%message{s3-key}");
+            .withName("%message{s3-key}").withContainerName("s3-src-bucket");
       }
       
     },
@@ -42,20 +49,20 @@ public class BlobStoreServiceTest extends ServiceCase {
       @Override
       Operation build() {
         return new Download().withTempDirectory("/path/to/temp/dir/if/required")
-            .withContainerName("s3-bucket").withName("%message{s3-key}");
+            .withName("%message{s3-key}").withContainerName("s3-bucket");
       }
 
     },
     Remove {
       @Override
       Operation build() {
-        return new Remove().withContainerName("s3-bucket").withName("%message{s3-key}");
+        return new Remove().withName("%message{s3-key}").withContainerName("s3-bucket");
       }
     },
     Upload {
       @Override
       Operation build() {
-        return new Upload().withContainerName("s3-bucket").withName("%message{s3-key}");
+        return new Upload().withName("%message{s3-key}").withContainerName("s3-bucket");
       }
     };
     abstract Operation build();
@@ -76,7 +83,7 @@ public class BlobStoreServiceTest extends ServiceCase {
       LifecycleHelper.stopAndClose(service);
     }
     service.setConnection(OperationCase.createConnection());
-    service.setOperation(new Upload().withContainerName("container").withName("name"));
+    service.setOperation(new Upload().withName("name").withContainerName("container"));
     try {
       LifecycleHelper.initAndStart(service);
     } finally {

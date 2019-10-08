@@ -34,7 +34,7 @@ public class CopyTest extends OperationCase {
     BlobStoreService service =
         new BlobStoreService(con,
             new Copy().withDestinationName(destName).withDestinationContainerName(container)
-                .withContainerName(container).withName(name));
+                .withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
