@@ -19,8 +19,6 @@ import org.jclouds.blobstore.BlobStore;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,21 +35,11 @@ public class Remove extends OperationImpl {
 
   }
 
-  public Remove(String container, String name) {
-    this();
-    setContainerName(container);
-    setName(name);
-  }
-
   @Override
-  public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws InterlokException {
-    try {
-      String container = msg.resolve(getContainerName());
-      String name = msg.resolve(getName());
-      BlobStore store = conn.getBlobStore(container);
-      store.removeBlob(container, name);
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+  public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws Exception {
+    String container = msg.resolve(getContainerName());
+    String name = msg.resolve(getName());
+    BlobStore store = conn.getBlobStore(container);
+    store.removeBlob(container, name);
   }
 }

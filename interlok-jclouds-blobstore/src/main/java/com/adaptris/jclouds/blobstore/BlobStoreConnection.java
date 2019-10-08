@@ -18,6 +18,7 @@ package com.adaptris.jclouds.blobstore;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStore;
@@ -144,7 +145,8 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
     try {
       ContextBuilder builder = ContextBuilder.newBuilder(getProvider());
       builder.overrides(KeyValuePairBag.asProperties(overrideConfiguration()));
-      if (isNotBlank(getCredentials()) || isNotBlank(getIdentity())) {
+      if (BooleanUtils.or(new boolean[] {
+          isNotBlank(getCredentials()), isNotBlank(getIdentity())})) {
         builder.credentials(Password.decode(ExternalResolver.resolve(getIdentity())),
             Password.decode(ExternalResolver.resolve(getCredentials())));
       }

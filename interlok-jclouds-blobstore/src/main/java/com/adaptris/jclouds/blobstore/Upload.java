@@ -28,8 +28,6 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,23 +62,13 @@ public class Upload extends OperationImpl {
 
   }
 
-  public Upload(String container, String name) {
-    this();
-    setContainerName(container);
-    setName(name);
-  }
-
   @Override
-  public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws InterlokException {
-    try {
-      String container = msg.resolve(getContainerName());
-      String name = msg.resolve(getName());
-      BlobStore store = conn.getBlobStore(container);
-      Blob blob = build(store.blobBuilder(name), msg);
-      store.putBlob(container, blob, buildPutOptions(store, msg));
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+  public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws Exception {
+    String container = msg.resolve(getContainerName());
+    String name = msg.resolve(getName());
+    BlobStore store = conn.getBlobStore(container);
+    Blob blob = build(store.blobBuilder(name), msg);
+    store.putBlob(container, blob, buildPutOptions(store, msg));
   }
 
   private Blob build(BlobBuilder builder, AdaptrisMessage msg) throws Exception {
@@ -95,7 +83,7 @@ public class Upload extends OperationImpl {
     return blob;
   }
   
-  private PutOptions buildPutOptions(BlobStore store, AdaptrisMessage msg) {
+  protected PutOptions buildPutOptions(BlobStore store, AdaptrisMessage msg) {
     PutOptions result = PutOptions.NONE;
     if (atLeastTwoParts(store, msg.getSize())) {
       result = PutOptions.Builder.multipart(BooleanUtils.toBooleanDefaultIfNull(getUseMultipart(), true));
@@ -105,7 +93,7 @@ public class Upload extends OperationImpl {
     return result;
   }
 
-  private boolean atLeastTwoParts(BlobStore store, long msgSize) {
+  protected boolean atLeastTwoParts(BlobStore store, long msgSize) {
     // Testing with backblaze, if you enable multiparts, and you're only uploading a small
     // file, it complains as it wants at least 2 parts.
     // AWS-S3 doesn't seem to care.

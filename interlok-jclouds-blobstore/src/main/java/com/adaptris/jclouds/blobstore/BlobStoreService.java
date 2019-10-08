@@ -27,7 +27,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NonNull;
@@ -114,7 +113,7 @@ public class BlobStoreService extends ServiceImp implements ConnectedService {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       getOperation().execute(getConnection().retrieveConnection(BlobStoreConnection.class), msg);
-    } catch (InterlokException e) {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }

@@ -18,14 +18,12 @@ package com.adaptris.jclouds.blobstore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
@@ -68,6 +66,33 @@ public class ConnectionTest extends OperationCase {
       BlobStoreContext ctx = con.getBlobStoreContext();
       BlobStore store = ctx.getBlobStore();
       con.getBlobStore(container);
+      fail();
+    } catch (CoreException expected) {
+
+    } finally {
+      LifecycleHelper.stopAndClose(con);
+    }
+  }
+
+  @Test
+  public void testLifecycle() throws Exception {
+    String name = guid.safeUUID();
+    String container = guid.safeUUID();
+    BlobStoreConnection con = new BlobStoreConnection();
+    try {
+      LifecycleHelper.initAndStart(con);
+      fail();
+    } catch (CoreException expected) {
+
+    } finally {
+      LifecycleHelper.stopAndClose(con);
+    }
+    con = createConnection();
+    // will fail to decode
+    con.setIdentity("PW:x");
+    con.setCredentials("x");
+    try {
+      LifecycleHelper.initAndStart(con);
       fail();
     } catch (CoreException expected) {
 

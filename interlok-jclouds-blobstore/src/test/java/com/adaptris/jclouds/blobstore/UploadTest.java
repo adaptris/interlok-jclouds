@@ -16,15 +16,16 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
+import static org.junit.Assert.assertTrue;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.mockito.Mockito;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.lms.FileBackedMessageFactory;
@@ -62,7 +63,7 @@ public class UploadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Upload(container, name));
+    BlobStoreService service = new BlobStoreService(con, new Upload().withContainerName(container).withName(name));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
@@ -82,7 +83,7 @@ public class UploadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Upload(container, name));
+    BlobStoreService service = new BlobStoreService(con, new Upload().withContainerName(container).withName(name));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
@@ -95,5 +96,33 @@ public class UploadTest extends OperationCase {
     } finally {
       LifecycleHelper.stopAndClose(service);
     }
+  }
+
+  @Test
+  public void testAtLeastTwoParts() throws Exception {
+    Upload op = new Upload();
+    BlobStore blobstore = Mockito.mock(BlobStore.class);
+    Mockito.when(blobstore.getMaximumMultipartPartSize()).thenReturn(1024L);
+    Mockito.when(blobstore.getMaximumNumberOfParts()).thenReturn(Integer.MAX_VALUE);
+    Mockito.when(blobstore.getMinimumMultipartPartSize()).thenReturn(1L);
+    assertTrue(op.atLeastTwoParts(blobstore, 1024 * 1024));
+    assertFalse(op.atLeastTwoParts(blobstore, 1023));
+  }
+
+  @Test
+  public void testBuildPutOptions() throws Exception {
+    Upload op = new Upload();
+    BlobStore blobstore = Mockito.mock(BlobStore.class);
+    Mockito.when(blobstore.getMaximumMultipartPartSize()).thenReturn(1024L);
+    Mockito.when(blobstore.getMaximumNumberOfParts()).thenReturn(Integer.MAX_VALUE);
+    Mockito.when(blobstore.getMinimumMultipartPartSize()).thenReturn(1L);
+    AdaptrisMessage msg = Mockito.mock(AdaptrisMessage.class);
+    Mockito.when(msg.getSize()).thenReturn(1024 * 1024L);
+    assertNotNull(op.buildPutOptions(blobstore, msg));
+
+    AdaptrisMessage msg2 = Mockito.mock(AdaptrisMessage.class);
+    Mockito.when(msg2.getSize()).thenReturn(1023L);
+    assertNotNull(op.buildPutOptions(blobstore, msg2));
+
   }
 }

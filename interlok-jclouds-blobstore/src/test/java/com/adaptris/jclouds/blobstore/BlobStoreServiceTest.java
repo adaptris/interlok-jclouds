@@ -17,7 +17,6 @@ package com.adaptris.jclouds.blobstore;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.util.LifecycleHelper;
@@ -32,22 +31,21 @@ public class BlobStoreServiceTest extends ServiceCase {
     Download {
       @Override
       Operation build() {
-        Download op = new Download("s3-bucket", "%message{s3-key}");
-        op.setTempDirectory("/path/to/temp/dir/if/required");
-        return op;
+        return new Download().withTempDirectory("/path/to/temp/dir/if/required").withContainerName("s3-bucket")
+            .withName("%message{s3-key}");
       }
       
     },
     Remove {
       @Override
       Operation build() {
-        return new Remove("s3-bucket", "%message{s3-key}");
+        return new Remove().withContainerName("s3-bucket").withName("%message{s3-key}");
       }
     },
     Upload {
       @Override
       Operation build() {
-        return new Upload("s3-bucket", "%message{s3-key}");
+        return new Upload().withContainerName("s3-bucket").withName("%message{s3-key}");
       }
     };
     abstract Operation build();
@@ -60,13 +58,15 @@ public class BlobStoreServiceTest extends ServiceCase {
   public void testLifecycle() throws Exception {
     BlobStoreService service = new BlobStoreService();
     try {
-      LifecycleHelper.init(service);
+      LifecycleHelper.initAndStart(service);
       fail();
     } catch (CoreException expected) {
 
+    } finally {
+      LifecycleHelper.stopAndClose(service);
     }
     service.setConnection(OperationCase.createConnection());
-    service.setOperation(new Upload("container", "name"));
+    service.setOperation(new Upload().withContainerName("container").withName("name"));
     try {
       LifecycleHelper.initAndStart(service);
     } finally {

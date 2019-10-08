@@ -15,13 +15,13 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import com.adaptris.annotation.AdvancedConfig;
@@ -29,7 +29,6 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
@@ -57,29 +56,19 @@ public class Download extends OperationImpl {
 
   }
 
-  public Download(String container, String name) {
-    this();
-    setContainerName(container);
-    setName(name);
-  }
-
   @Override
-  public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws InterlokException {
-    try {
-      String container = msg.resolve(getContainerName());
-      String name = msg.resolve(getName());
-      BlobStore store = conn.getBlobStore(container);
-      // downloadBlob using a temp file is marked as @Beta...
-      // entirely expected that it doesn't work.
-      if (!tryDownloadBlob(store, container, name, msg)) {
-        tryGetBlob(store, container, name, msg);
-      }
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
+  public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws Exception {
+    String container = msg.resolve(getContainerName());
+    String name = msg.resolve(getName());
+    BlobStore store = conn.getBlobStore(container);
+    // downloadBlob using a temp file is marked as @Beta...
+    // entirely expected that it doesn't work.
+    if (!tryDownloadBlob(store, container, name, msg)) {
+      tryGetBlob(store, container, name, msg);
     }
   }
 
-  private void tryGetBlob(BlobStore store, String container, String name, AdaptrisMessage msg)
+  protected void tryGetBlob(BlobStore store, String container, String name, AdaptrisMessage msg)
       throws InterlokException, IOException {
     Blob blob = store.getBlob(container, name);
     try (InputStream in = blob.getPayload().openStream(); OutputStream out = msg.getOutputStream()) {
@@ -87,15 +76,12 @@ public class Download extends OperationImpl {
     }
   }
 
-  private boolean tryDownloadBlob(BlobStore store, String container, String name, AdaptrisMessage msg)
+  protected boolean tryDownloadBlob(BlobStore store, String container, String name,
+      AdaptrisMessage msg)
       throws InterlokException, IOException {
-    File tempDir = null;
     boolean rc;
     try {
-      if (!isEmpty(getTempDirectory())) {
-        tempDir = new File(getTempDirectory());
-      }
-      File destFile = File.createTempFile(this.getClass().getSimpleName(), "", tempDir);
+      File destFile = tempFile();
       store.downloadBlob(container, name, destFile);
       write(destFile, msg);
       rc = true;
@@ -105,7 +91,12 @@ public class Download extends OperationImpl {
     return rc;
   }
 
-  private void write(File f, AdaptrisMessage msg) throws IOException {
+  protected File tempFile() throws IOException {
+    File tempDir = StringUtils.isBlank(getTempDirectory()) ? null : new File(getTempDirectory());
+    return File.createTempFile(this.getClass().getSimpleName(), "", tempDir);
+  }
+
+  protected void write(File f, AdaptrisMessage msg) throws IOException {
     if (msg instanceof FileBackedMessage) {
       log.trace("Initialising Message from {}", f.getCanonicalPath());
       ((FileBackedMessage) msg).initialiseFrom(f);
@@ -114,6 +105,11 @@ public class Download extends OperationImpl {
         IOUtils.copy(in, out);
       }
     }
+  }
+
+  public Download withTempDirectory(String s) {
+    setTempDirectory(s);
+    return this;
   }
 
 }

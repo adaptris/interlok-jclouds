@@ -16,14 +16,12 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.junit.Assert.assertFalse;
-
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
@@ -46,7 +44,7 @@ public class RemoveTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service = new BlobStoreService(con, new Remove(container, name));
+    BlobStoreService service = new BlobStoreService(con, new Remove().withContainerName(container).withName(name));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
