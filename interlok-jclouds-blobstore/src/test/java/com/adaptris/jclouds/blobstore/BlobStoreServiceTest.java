@@ -106,7 +106,7 @@ public class BlobStoreServiceTest extends ServiceCase {
     return result;
   }
 
-  protected KeyValuePairSet exampleClientConfig() {
+  public static KeyValuePairSet exampleClientConfig() {
     KeyValuePairSet kvps = new KeyValuePairSet();
     kvps.add(new KeyValuePair("jclouds.relax-hostname", "true"));
     kvps.add(new KeyValuePair("jclouds.trust-all-certs", "true"));
