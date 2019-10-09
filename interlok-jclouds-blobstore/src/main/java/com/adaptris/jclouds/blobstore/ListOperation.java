@@ -16,6 +16,7 @@
 package com.adaptris.jclouds.blobstore;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -32,6 +33,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.interlok.cloud.BlobListRenderer;
 import com.adaptris.interlok.cloud.RemoteBlob;
+import com.adaptris.interlok.cloud.RemoteBlobFilter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,14 +63,14 @@ public class ListOperation extends ContainerOperation {
   private String prefix;
 
   /**
-   * Apply any filtering on the suffix as required.
+   * Apply any filtering on the remote blob before rendering.
    * 
    */
   @AdvancedConfig
   @Getter
   @Setter
-  @InputFieldDefault(value = "")
-  private String filterSuffix;
+  @InputFieldDefault(value = "accept all")
+  private RemoteBlobFilter filter;
 
   /**
    * Specify the output style.
@@ -90,25 +92,26 @@ public class ListOperation extends ContainerOperation {
   public void execute(BlobStoreConnection conn, AdaptrisMessage msg) throws Exception {
     String container = msg.resolve(getContainerName());
     BlobStore store = conn.getBlobStore(container);
+    outputStyle().render(list(store, container, msg), msg);
+  }
 
+  private Collection<RemoteBlob> list(BlobStore store, String container, AdaptrisMessage msg) throws Exception {
     List<RemoteBlob> blobs = new ArrayList<>();
     String marker = null;
+    RemoteBlobFilter filter = blobFilter();
     do {
-      PageSet<? extends StorageMetadata> bloblist =
-          store.list(container, buildListOptions(msg, marker));
-      String filter = StringUtils.defaultIfBlank(getFilterSuffix(), "");
-      for (StorageMetadata m : bloblist) {
-        if (BooleanUtils.and(new boolean[] {
-            m.getName().endsWith(filter), m.getType() == StorageType.BLOB
-        })) {
-          blobs.add(new RemoteBlob.Builder().setBucket(container)
-              .setLastModified(m.getLastModified().getTime()).setName(m.getName())
-              .setSize(m.getSize()).build());
+      PageSet<? extends StorageMetadata> bloblist = store.list(container, buildListOptions(msg, marker));
+      for (StorageMetadata meta : bloblist) {
+        RemoteBlob blob = new RemoteBlob.Builder().setBucket(container).setLastModified(meta.getLastModified().getTime())
+            .setName(meta.getName()).setSize(meta.getSize()).build();
+        // Only accept if it's a blob, rather than a directory or similar.
+        if (BooleanUtils.and(new boolean[] {filter.accept(blob), meta.getType() == StorageType.BLOB})) {
+          blobs.add(blob);
         }
       }
       marker = bloblist.getNextMarker();
     } while (marker != null);
-    outputStyle().render(blobs, msg);
+    return blobs;
   }
 
   private ListContainerOptions buildListOptions(AdaptrisMessage msg, String marker) {
@@ -120,8 +123,8 @@ public class ListOperation extends ContainerOperation {
     return options;
   }
 
-  public ListOperation withFilterSuffix(String s) {
-    setFilterSuffix(s);
+  public ListOperation withFilter(RemoteBlobFilter s) {
+    setFilter(s);
     return this;
   }
 
@@ -137,5 +140,9 @@ public class ListOperation extends ContainerOperation {
 
   private BlobListRenderer outputStyle() {
     return ObjectUtils.defaultIfNull(getOutputStyle(), new BlobListRenderer() {});
+  }
+
+  private RemoteBlobFilter blobFilter() {
+    return ObjectUtils.defaultIfNull(getFilter(), (blob) -> true);
   }
 }
