@@ -74,7 +74,7 @@ public class ListBlobsTest extends OperationCase {
   // with a FileNotFoundException when creating the blob...
   // Works fine in WSL + mac ; as a result, we stick an Assumption in for Linux...
   @Test
-  public void testList_WithPrefix_FailsOnWindows() throws Exception {
+  public void testList_WithPrefix_IgnoredOnWindows() throws Exception {
     Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
