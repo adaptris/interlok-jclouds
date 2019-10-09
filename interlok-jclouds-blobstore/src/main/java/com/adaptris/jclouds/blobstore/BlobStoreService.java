@@ -17,7 +17,7 @@ package com.adaptris.jclouds.blobstore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -27,8 +27,10 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * 
@@ -38,13 +40,31 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("jclouds-blobstore-service")
+@ComponentProfile(summary = "Perform an operation against a remote object using a pluggable cloud storage provider",
+    recommended = {BlobStoreConnection.class}, tag = "blob,s3,azure,backblaze,cloud")
 public class BlobStoreService extends ServiceImp implements ConnectedService {
 
+  /**
+   * The connection to use when connecting to the remote blob storage.
+   * 
+   */
   @Valid
   @NotNull
+  @Setter
+  @Getter
+  @NonNull
   private AdaptrisConnection connection;
+  /**
+   * The Operation to execute
+   * 
+   * @see Upload
+   * @see Download
+   */
   @NotNull
   @Valid
+  @Setter
+  @Getter
+  @NonNull
   private Operation operation;
 
   public BlobStoreService() {
@@ -93,30 +113,8 @@ public class BlobStoreService extends ServiceImp implements ConnectedService {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       getOperation().execute(getConnection().retrieveConnection(BlobStoreConnection.class), msg);
-    } catch (InterlokException e) {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
-
-  public AdaptrisConnection getConnection() {
-    return connection;
-  }
-
-  public void setConnection(AdaptrisConnection c) {
-    this.connection = Args.notNull(c, "connection");
-  }
-
-  public Operation getOperation() {
-    return operation;
-  }
-
-  /**
-   * Set the operation you want to perform.
-   * 
-   * @param operation the operation, generally one of {@link Upload}, {@link Download}, or {@link Remove}
-   */
-  public void setOperation(Operation operation) {
-    this.operation = operation;
-  }
-
 }

@@ -16,14 +16,15 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-
-import org.hibernate.validator.constraints.NotBlank;
-import org.jclouds.Constants;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
-
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisConnectionImp;
@@ -36,6 +37,8 @@ import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Interacting with cloud storage via apache jclouds.
@@ -58,15 +61,50 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "provider", "identity", "credentials"
 })
+@ComponentProfile(summary = "Connect via apache jclouds to a pluggable cloud storage provider",
+    recommended = {BlobStoreConnection.class}, tag = "blob,s3,azure,backblaze,cloud")
 public class BlobStoreConnection extends AdaptrisConnectionImp {
 
+  /**
+   * The cloud storage provider.
+   * <p>
+   * The value specified here will be passed into {@code ContextBuilder#newBuilder(String)} without
+   * any validation. Since jclouds is pluggable; please check
+   * <a href="http://jclouds.apache.org/reference/providers/#blobstore-providers">their
+   * documentation</a> for the list of supported providers. Please note that individual providers may
+   * require additional jars that will not be delivered as part of the standard distribution.
+   * </p>
+   */
   @NotBlank
+  @Getter
+  @Setter
   private String provider;
+  /**
+   * Set the identity used to connect to the storage provider, generally the access key.
+   */
+  @Getter
+  @Setter
   @InputFieldHint(style = "PASSWORD", external = true)
   private String identity;
+  /**
+   * Set any credentials that are required, generally the secret key.
+   */
+  @Getter
+  @Setter
   @InputFieldHint(style = "PASSWORD", external = true)
   private String credentials;
+  /**
+   * Set any overrides that are required.
+   * <p>
+   * These properties will be passed through to
+   * {@link ContextBuilder#overrides(java.util.Properties)}.
+   * </p>
+   * 
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
+  @Valid
   private KeyValuePairSet configuration;
 
   private transient BlobStoreContext context;
@@ -107,7 +145,8 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
     try {
       ContextBuilder builder = ContextBuilder.newBuilder(getProvider());
       builder.overrides(KeyValuePairBag.asProperties(overrideConfiguration()));
-      if (isNotBlank(getCredentials()) || isNotBlank(getIdentity())) {
+      if (BooleanUtils.or(new boolean[] {
+          isNotBlank(getCredentials()), isNotBlank(getIdentity())})) {
         builder.credentials(Password.decode(ExternalResolver.resolve(getIdentity())),
             Password.decode(ExternalResolver.resolve(getCredentials())));
       }
@@ -134,51 +173,7 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
     context = null;
   }
 
-  public String getProvider() {
-    return provider;
-  }
-
-  public void setProvider(String provider) {
-    this.provider = Args.notBlank(provider, "provider");
-  }
-
-  public String getIdentity() {
-    return identity;
-  }
-
-  public void setIdentity(String id) {
-    this.identity = id;
-  }
-
-  public String getCredentials() {
-    return credentials;
-  }
-
-  public void setCredentials(String cred) {
-    this.credentials = cred;
-  }
-
-  /**
-   * @return the overrides
-   */
-  public KeyValuePairSet getConfiguration() {
-    return configuration;
-  }
-
-  /**
-   * Set any overrides that are required.
-   * <p>
-   * These properties will be passed through to {@link ContextBuilder#overrides(java.util.Properties)}.
-   * </p>
-   * 
-   * @see Constants
-   * @param b the overrides to set
-   */
-  public void setConfiguration(KeyValuePairSet b) {
-    this.configuration = b;
-  }
-
   public KeyValuePairSet overrideConfiguration() {
-    return getConfiguration() != null ? getConfiguration() : new KeyValuePairSet();
+    return ObjectUtils.defaultIfNull(getConfiguration(), new KeyValuePairSet());
   }
 }
