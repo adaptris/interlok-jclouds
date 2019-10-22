@@ -15,10 +15,12 @@
 */
 package com.adaptris.jclouds.blobstore;
 
+import org.jclouds.blobstore.BlobStore;
+import org.jclouds.blobstore.BlobStoreContext;
+import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
@@ -36,5 +38,15 @@ public abstract class OperationCase {
     config.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, TempFileUtils.createTrackedDir(config).getCanonicalPath()));
     BlobStoreConnection c = new BlobStoreConnection("filesystem", config);
     return c;
+  }
+
+
+  public static void createBlob(BlobStoreContext ctx, String container, String name,
+      String content) {
+    BlobStore store = ctx.getBlobStore();
+    store.createContainerInLocation(null, container);
+    BlobBuilder builder = store.blobBuilder(name);
+    builder.payload(content);
+    store.putBlob(container, builder.build());
   }
 }

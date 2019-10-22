@@ -1,5 +1,6 @@
 plugins {
   id 'com.github.spotbugs' version '2.0.0' apply false
+  id "io.freefair.lombok" version "4.1.2" apply false
 }
 
 ext {
@@ -17,9 +18,10 @@ ext {
   interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.27'
+  slf4jVersion = '1.7.28'
   log4j2Version = '2.12.1'
   jcloudsVersion = '2.1.2'
+  mockitoVersion = '3.0.0'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -39,12 +41,15 @@ subprojects {
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
   apply plugin: "jacoco"
+  apply plugin: "io.freefair.lombok"
   apply plugin: 'com.github.spotbugs'
 
   sourceCompatibility = 1.8
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
+  generateLombokConfig.enabled = false
+
 
   // In this section you declare where to find the dependencies of your project
   repositories {
@@ -86,11 +91,13 @@ subprojects {
     compile ("org.slf4j:slf4j-api:$slf4jVersion")
 
     annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing=true}
-    testCompile ('junit:junit:4.12')
-    testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
-    testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
-    testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
-    testCompile ("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    testImplementation ('junit:junit:4.12')
+    testImplementation ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
+    testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
+    testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
+    testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    testImplementation ("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
 
     javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
     offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}

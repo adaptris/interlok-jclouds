@@ -19,19 +19,20 @@ import org.jclouds.blobstore.BlobStore;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Remove an object.
+ * Check an object exists exception otherwise.
  * 
- * @config jclouds-blobstore-remove
+ * @config jclouds-blobstore-check-file-exists
  */
-@XStreamAlias("jclouds-blobstore-remove")
+@XStreamAlias("jclouds-blobstore-check-file-exists")
 @DisplayOrder(order = {"containerName", "name",})
-@ComponentProfile(summary = "Remove a BLOB", tag = "jclouds")
-public class Remove extends OperationImpl {
+@ComponentProfile(summary = "Check a BLOB exists", tag = "jclouds", since = "3.9.2")
+public class CheckExists extends OperationImpl {
 
-  public Remove() {
+  public CheckExists() {
 
   }
 
@@ -40,6 +41,10 @@ public class Remove extends OperationImpl {
     String container = msg.resolve(getContainerName());
     String name = msg.resolve(getName());
     BlobStore store = conn.getBlobStore(container);
-    store.removeBlob(container, name);
+    if (!store.blobExists(container, name)) {
+      throw new CoreException("[" + name + "] not found in " + container);
+    }  else {
+      log.trace("[{}:{}] exists", container, name);
+    }
   }
 }

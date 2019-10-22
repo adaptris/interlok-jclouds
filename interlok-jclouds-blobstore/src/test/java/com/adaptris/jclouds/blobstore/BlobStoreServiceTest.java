@@ -17,7 +17,6 @@ package com.adaptris.jclouds.blobstore;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.util.LifecycleHelper;
@@ -28,26 +27,42 @@ public class BlobStoreServiceTest extends ServiceCase {
   private static final String HYPHEN = "-";
 
   private enum OperationsBuilder {
+    List {
+      @Override
+      Operation build() {
+        return new ListOperation()
+            .withContainerName("s3-bucket");
+      }
 
+    },
+    Copy {
+      @Override
+      Operation build() {
+        return new Copy()
+            .withDestinationContainerName("s3-target-bucket")
+            .withDestinationName("%message{s3-target-key}")
+            .withName("%message{s3-key}").withContainerName("s3-src-bucket");
+      }
+      
+    },
     Download {
       @Override
       Operation build() {
-        Download op = new Download("s3-bucket", "%message{s3-key}");
-        op.setTempDirectory("/path/to/temp/dir/if/required");
-        return op;
+        return new Download().withTempDirectory("/path/to/temp/dir/if/required")
+            .withName("%message{s3-key}").withContainerName("s3-bucket");
       }
-      
+
     },
     Remove {
       @Override
       Operation build() {
-        return new Remove("s3-bucket", "%message{s3-key}");
+        return new Remove().withName("%message{s3-key}").withContainerName("s3-bucket");
       }
     },
     Upload {
       @Override
       Operation build() {
-        return new Upload("s3-bucket", "%message{s3-key}");
+        return new Upload().withName("%message{s3-key}").withContainerName("s3-bucket");
       }
     };
     abstract Operation build();
@@ -60,13 +75,15 @@ public class BlobStoreServiceTest extends ServiceCase {
   public void testLifecycle() throws Exception {
     BlobStoreService service = new BlobStoreService();
     try {
-      LifecycleHelper.init(service);
+      LifecycleHelper.initAndStart(service);
       fail();
     } catch (CoreException expected) {
 
+    } finally {
+      LifecycleHelper.stopAndClose(service);
     }
     service.setConnection(OperationCase.createConnection());
-    service.setOperation(new Upload("container", "name"));
+    service.setOperation(new Upload().withName("name").withContainerName("container"));
     try {
       LifecycleHelper.initAndStart(service);
     } finally {
@@ -89,7 +106,7 @@ public class BlobStoreServiceTest extends ServiceCase {
     return result;
   }
 
-  protected KeyValuePairSet exampleClientConfig() {
+  public static KeyValuePairSet exampleClientConfig() {
     KeyValuePairSet kvps = new KeyValuePairSet();
     kvps.add(new KeyValuePair("jclouds.relax-hostname", "true"));
     kvps.add(new KeyValuePair("jclouds.trust-all-certs", "true"));

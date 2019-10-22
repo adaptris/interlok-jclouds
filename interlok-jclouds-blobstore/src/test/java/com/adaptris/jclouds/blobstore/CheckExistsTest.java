@@ -15,32 +15,49 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.junit.Assert.assertFalse;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class RemoveTest extends OperationCase {
+public class CheckExistsTest extends OperationCase {
 
 
   @Test
-  public void testRemove() throws Exception {
+  public void testExists() throws Exception {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
     BlobStoreService service =
-        new BlobStoreService(con, new Remove().withName(name).withContainerName(container));
+        new BlobStoreService(con, new CheckExists().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
-      createBlob(ctx, container, name, "hello world");
       BlobStore store = ctx.getBlobStore();
+      createBlob(ctx, container, name, "hello world");
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
       service.doService(msg);
-      assertFalse(store.blobExists(container, name));
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  @Test(expected = ServiceException.class)
+  public void testExists_NonExistent() throws Exception {
+    String name = guid.safeUUID();
+    String container = guid.safeUUID();
+    BlobStoreConnection con = createConnection();
+    BlobStoreService service = new BlobStoreService(con, new CheckExists().withName("XXXXXX").withContainerName(container));
+    try {
+      LifecycleHelper.initAndStart(service);
+      BlobStoreContext ctx = con.getBlobStoreContext();
+      BlobStore store = ctx.getBlobStore();
+      createBlob(ctx, container, name, "hello world");
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
+      service.doService(msg);
     } finally {
       LifecycleHelper.stopAndClose(service);
     }
