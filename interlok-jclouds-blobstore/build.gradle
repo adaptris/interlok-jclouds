@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok/Apache jclouds blobstore'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
@@ -32,7 +33,7 @@ task examplesJar(type: Jar, dependsOn: test) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from sourceSets.main.allSource
+    from sourceSets.main.extensions.delombokTask
 }
 
 artifacts {
@@ -71,5 +72,14 @@ publishing {
   }
 }
 
+delombok {
+  target = delombokTargetDir
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+clean.dependsOn deleteGeneratedFiles
 javadoc.dependsOn offlinePackageList
 
