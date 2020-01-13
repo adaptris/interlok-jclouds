@@ -14,14 +14,16 @@
  * limitations under the License.
 */
 package com.adaptris.jclouds.blobstore;
-
 import static com.adaptris.jclouds.blobstore.BlobStoreServiceTest.exampleClientConfig;
 import static com.adaptris.jclouds.blobstore.OperationCase.createBlob;
 import static com.adaptris.jclouds.blobstore.OperationCase.createConnection;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.StringReader;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceCase;
@@ -31,11 +33,11 @@ import com.adaptris.interlok.cloud.RemoteBlobFilterWrapper;
 import com.adaptris.util.KeyValuePairSet;
 
 public class ListBlobServiceTest extends ServiceCase {
-
-  public ListBlobServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
+  @Test
   public void testService() throws Exception {
     String container = OperationCase.guid.safeUUID();
     BlobStoreConnection con = createConnection();
@@ -63,6 +65,7 @@ public class ListBlobServiceTest extends ServiceCase {
 
   }
 
+  @Test
   public void testService_Failure() throws Exception {
     String container = OperationCase.guid.safeUUID();
     BlobStoreConnection con =
