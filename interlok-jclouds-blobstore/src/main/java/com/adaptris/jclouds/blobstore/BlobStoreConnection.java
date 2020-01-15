@@ -15,7 +15,7 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
