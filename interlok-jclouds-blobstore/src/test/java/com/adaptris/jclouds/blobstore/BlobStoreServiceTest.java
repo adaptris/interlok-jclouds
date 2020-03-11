@@ -15,8 +15,10 @@
 */
 package com.adaptris.jclouds.blobstore;
 
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.util.LifecycleHelper;
@@ -67,11 +69,11 @@ public class BlobStoreServiceTest extends ServiceCase {
     };
     abstract Operation build();
   }
-
-  public BlobStoreServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
+  @Test
   public void testLifecycle() throws Exception {
     BlobStoreService service = new BlobStoreService();
     try {

@@ -16,7 +16,7 @@
 package com.adaptris.jclouds.blobstore;
 
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.options.CopyOptions;
 import com.adaptris.annotation.ComponentProfile;
