@@ -58,6 +58,8 @@ publishing {
         properties.appendNode("tags", "s3,backblaze,azure blob,google cloud storage,rackspace")
         properties.appendNode("license", "false")
         properties.appendNode("externalUrl", "https://jclouds.apache.org/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok-jclouds/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-jclouds")   
       }
     }
   }
