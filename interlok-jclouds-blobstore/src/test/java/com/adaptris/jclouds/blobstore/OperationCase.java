@@ -49,4 +49,11 @@ public abstract class OperationCase {
     builder.payload(content);
     store.putBlob(container, builder.build());
   }
+  
+  public static void createBlobs(BlobStoreContext context, String container, int count, String suffix) {
+    for (int i = 0; i < count; i++) {
+      createBlob(context, container, guid.safeUUID() + suffix, "hello world");
+    }
+  }
+
 }
