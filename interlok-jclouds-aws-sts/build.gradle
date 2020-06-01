@@ -1,12 +1,11 @@
 ext {
-  componentName='Interlok/Apache jclouds blobstore'
+  componentName='Interlok/Apache JClouds STS'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
   compile project(":interlok-jclouds-common")
-  compile ("org.apache.jclouds:jclouds-blobstore:$jcloudsVersion")
-  testImplementation "org.apache.jclouds.api:filesystem:$jcloudsVersion"
+  compile ("org.apache.jclouds.api:sts:$jcloudsVersion")
 }
 
 
@@ -26,11 +25,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-task examplesJar(type: Jar, dependsOn: test) {
-    classifier = 'examples'
-    from new File(buildDir, '/examples')
-}
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.extensions.delombokTask
@@ -38,7 +32,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 artifacts {
   archives javadocJar
-  archives examplesJar
   archives sourcesJar
 }
 
@@ -48,18 +41,17 @@ publishing {
     mavenJava(MavenPublication) {
       from components.java
       artifact javadocJar { classifier "javadoc" }
-      artifact examplesJar { classifier "examples" }
       artifact sourcesJar { classifier "sources" }
       pom.withXml {
-        asNode().appendNode("description", "Use Apache jclouds to access your cloud storage")
+        asNode().appendNode("description", "Connect using Apache JClouds to AWS Services using AWS Secure Token Service")
         asNode().appendNode("name", componentName)
         def properties = asNode().appendNode("properties")
-        properties.appendNode("target", "3.7.3+")
-        properties.appendNode("tags", "s3,backblaze,azure blob,google cloud storage,rackspace")
+        properties.appendNode("target", "3.10.2+")
+        properties.appendNode("tags", "aws sts,aws,jclouds")
         properties.appendNode("license", "false")
         properties.appendNode("externalUrl", "https://jclouds.apache.org/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok-jclouds/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok-jclouds")   
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-jclouds")
       }
     }
   }
@@ -84,4 +76,3 @@ task deleteGeneratedFiles(type: Delete) {
 
 clean.dependsOn deleteGeneratedFiles
 javadoc.dependsOn offlinePackageList
-

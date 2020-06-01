@@ -16,8 +16,8 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import java.util.Optional;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jclouds.ContextBuilder;
@@ -27,31 +27,50 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisConnectionImp;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.security.exc.PasswordException;
-import com.adaptris.security.password.Password;
-import com.adaptris.util.KeyValuePairBag;
+import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.jclouds.common.CredentialsBuilder;
+import com.adaptris.jclouds.common.DefaultCredentialsBuilder;
+import com.adaptris.jclouds.common.JcloudsConnection;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Interacting with cloud storage via apache jclouds.
  * 
  * <p>
- * You will need to also have one of the <a href="https://jclouds.apache.org/reference/providers/#blobstore">supported providers</a>
- * in your classpath to be able to use this connection. Use the associated provider in your configuration. Note that
- * {@code identity} and {@code credentials} are not mandatory (and could be overriden via {@link #setConfiguration(KeyValuePairSet)}
- * or system properties). If not explicitly configured, then those values are left to the underlying provider to make a choice about
- * what credentials will be used to access cloud storage (for the aws-s3 provider, it will always fail if no identity/credentials
- * are provided as it doesn't use the java AWS SDK to handle authentication).
+ * You will need to also have one of the
+ * <a href="https://jclouds.apache.org/reference/providers/#blobstore">supported providers</a> in
+ * your classpath to be able to use this connection. Use the associated provider in your
+ * configuration. Note that {@code identity} and {@code credentials} are not mandatory (and could be
+ * overriden via {@link #setConfiguration(KeyValuePairSet)} or system properties). If not explicitly
+ * configured, then those values are left to the underlying provider to make a choice about what
+ * credentials will be used to access cloud storage (for the aws-s3 provider, it will always fail if
+ * no identity/credentials are provided as it doesn't use the java AWS SDK to handle
+ * authentication).
  * </p>
+ * <p>
+ * All the providers supported by jclouds are listed on their
+ * <a href="https://jclouds.apache.org/reference/providers/">website</a>. You should use that as the
+ * canonical reference. We have tested the blob storage with 3 different providers (the unit tests
+ * use the filesystem provider); and the operations have been confirmed to work.
  * </p>
+ * <ul>
+ * <li>To access AWS-S3 via jclouds you will need to include the artefact
+ * {@code org.apache.jclouds.provider:aws-s3:XYZ}; where {@code XYZ} is the appropriate version; and
+ * use the provider {@code aws-s3}. This was tested for completeness, using the
+ * {@code interlok-aws-s3} optional component is generally the better option.</li>
+ * <li>To access Backblaze via jclouds you will need to include the artefact
+ * {@code org.apache.jclouds.provider:b2:XYZ}; where {@code XYZ} is the appropriate version; and use
+ * the provider {@code b2}</li>
+ * <li>To access MS Azure blob storage via jclouds you will need to include the artefact
+ * {@code org.apache.jclouds.provider:azureblob:XYZ}; where {@code XYZ} is the appropriate version;
+ * and use the provider {@code azureblob}</li>
+ * </ul>
  * 
  * @config jclouds-blobstore-connection
  *
@@ -63,62 +82,38 @@ import lombok.Setter;
 })
 @ComponentProfile(summary = "Connect via apache jclouds to a pluggable cloud storage provider",
     recommended = {BlobStoreConnection.class}, tag = "blob,s3,azure,backblaze,cloud")
-public class BlobStoreConnection extends AdaptrisConnectionImp {
+@NoArgsConstructor
+public class BlobStoreConnection extends JcloudsConnection {
 
   /**
-   * The cloud storage provider.
-   * <p>
-   * The value specified here will be passed into {@code ContextBuilder#newBuilder(String)} without
-   * any validation. Since jclouds is pluggable; please check
-   * <a href="http://jclouds.apache.org/reference/providers/#blobstore-providers">their
-   * documentation</a> for the list of supported providers. Please note that individual providers may
-   * require additional jars that will not be delivered as part of the standard distribution.
-   * </p>
-   */
-  @NotBlank
-  @Getter
-  @Setter
-  private String provider;
-  /**
    * Set the identity used to connect to the storage provider, generally the access key.
+   * 
+   * @deprecated since 3.10.2 use a {@code CredentialsBuilder} instead.
    */
+  @AdvancedConfig(rare = true)
   @Getter
   @Setter
   @InputFieldHint(style = "PASSWORD", external = true)
+  @Deprecated
+  @Removal(version = "3.12.0", message = "use a credentials-builder instead")
   private String identity;
   /**
    * Set any credentials that are required, generally the secret key.
+   * 
+   * @deprecated since 3.10.2 use a {@code CredentialsBuilder} instead.
    */
+  @AdvancedConfig(rare = true)
   @Getter
   @Setter
   @InputFieldHint(style = "PASSWORD", external = true)
+  @Deprecated
+  @Removal(version = "3.12.0", message = "use a credentials-builder instead")
   private String credentials;
-  /**
-   * Set any overrides that are required.
-   * <p>
-   * These properties will be passed through to
-   * {@link ContextBuilder#overrides(java.util.Properties)}.
-   * </p>
-   * 
-   */
-  @AdvancedConfig
-  @Getter
-  @Setter
-  @Valid
-  private KeyValuePairSet configuration;
 
   private transient BlobStoreContext context;
   private transient BlobStore blobStore;
-
-  public BlobStoreConnection() {
-
-  }
-
-  public BlobStoreConnection(String provider, KeyValuePairSet cfg) {
-    this();
-    setProvider(provider);
-    setConfiguration(cfg);
-  }
+  private transient boolean credentialsWarningLogged;
+  private transient Optional<CredentialsBuilder> legacyCredentials;
 
   protected BlobStoreContext getBlobStoreContext() {
     return context;
@@ -133,27 +128,21 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
 
   @Override
   protected void prepareConnection() throws CoreException {
-    try {
-      Args.notBlank(getProvider(), "provider");
-    } catch (IllegalArgumentException e) {
-      throw ExceptionHelper.wrapCoreException(e);
+    super.prepareConnection();
+    if (BooleanUtils.or(new boolean[] {isNotBlank(getCredentials()), isNotBlank(getIdentity())})) {
+      LoggingHelper.logWarning(credentialsWarningLogged, () -> credentialsWarningLogged = true,
+          "[{}] uses static credentials/identity, use a credentials-builder instead",
+          LoggingHelper.friendlyName(this));
+      legacyCredentials = Optional.of(new DefaultCredentialsBuilder().withCredentials(getCredentials())
+              .withIdentity(getIdentity()));
     }
   }
 
+
   @Override
   protected void initConnection() throws CoreException {
-    try {
-      ContextBuilder builder = ContextBuilder.newBuilder(getProvider());
-      builder.overrides(KeyValuePairBag.asProperties(overrideConfiguration()));
-      if (BooleanUtils.or(new boolean[] {
-          isNotBlank(getCredentials()), isNotBlank(getIdentity())})) {
-        builder.credentials(Password.decode(ExternalResolver.resolve(getIdentity())),
-            Password.decode(ExternalResolver.resolve(getCredentials())));
-      }
-      context = builder.buildView(BlobStoreContext.class);
-    } catch (PasswordException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    ContextBuilder builder = newContextBuilder();
+    context = builder.buildView(BlobStoreContext.class);
   }
 
   @Override
@@ -167,13 +156,16 @@ public class BlobStoreConnection extends AdaptrisConnectionImp {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected void closeConnection() {
-    context.close();
+    IOUtils.closeQuietly(context);
     blobStore = null;
     context = null;
   }
 
-  public KeyValuePairSet overrideConfiguration() {
-    return ObjectUtils.defaultIfNull(getConfiguration(), new KeyValuePairSet());
+  @Override
+  protected Optional<CredentialsBuilder> credentialsBuilder() {
+    return ObjectUtils.defaultIfNull(legacyCredentials, super.credentialsBuilder());
   }
+
 }

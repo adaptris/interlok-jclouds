@@ -30,7 +30,6 @@ import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.cloud.RemoteBlobFilterWrapper;
-import com.adaptris.util.KeyValuePairSet;
 
 public class ListBlobServiceTest extends ServiceCase {
   @Override
@@ -69,7 +68,7 @@ public class ListBlobServiceTest extends ServiceCase {
   public void testService_Failure() throws Exception {
     String container = OperationCase.guid.safeUUID();
     BlobStoreConnection con =
-        new BlobStoreConnection("how-can-this-provider-exist", new KeyValuePairSet());
+        new BlobStoreConnection().withProvider("how-can-this-provider-exist");
 
     ListBlobs service =
         new ListBlobs().withConnection(con).withOutputStyle(null).withContainer(container);
@@ -90,7 +89,8 @@ public class ListBlobServiceTest extends ServiceCase {
   protected ListBlobs retrieveObjectForSampleConfig() {
     try {
       return new ListBlobs()
-          .withConnection(new BlobStoreConnection("aws-s3", exampleClientConfig()))
+          .withConnection(new BlobStoreConnection().withProvider("aws-s3")
+              .withConfiguration(exampleClientConfig()))
           .withContainer("s3-bucket").withPrefix("prefix/or/path/if/you/prefer/")
           .withFilter(
               new RemoteBlobFilterWrapper().withFilterExpression(".*")
