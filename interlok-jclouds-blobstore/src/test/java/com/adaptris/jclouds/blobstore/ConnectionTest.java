@@ -15,47 +15,18 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
-import org.jclouds.filesystem.reference.FilesystemConstants;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 
 public class ConnectionTest extends OperationCase {
 
-
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-
-  }
-
   @Test
-  public void testConfiguration() throws Exception {
-    BlobStoreConnection con = new BlobStoreConnection();
-    assertNotNull(con.overrideConfiguration());
-    assertEquals(0, con.overrideConfiguration().size());
-    KeyValuePairSet cfg = new KeyValuePairSet();
-    cfg.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, "/tmp"));
-    con.setConfiguration(cfg);
-    assertNotNull(con.overrideConfiguration());
-    assertEquals(cfg, con.overrideConfiguration());
-  }
-
-  @Test
-  public void testConnection() throws Exception {
+  @SuppressWarnings("deprecation")
+  public void testConnection_LegacyCredentials() throws Exception {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
@@ -74,30 +45,4 @@ public class ConnectionTest extends OperationCase {
     }
   }
 
-  @Test
-  public void testLifecycle() throws Exception {
-    String name = guid.safeUUID();
-    String container = guid.safeUUID();
-    BlobStoreConnection con = new BlobStoreConnection();
-    try {
-      LifecycleHelper.initAndStart(con);
-      fail();
-    } catch (CoreException expected) {
-
-    } finally {
-      LifecycleHelper.stopAndClose(con);
-    }
-    con = createConnection();
-    // will fail to decode
-    con.setIdentity("PW:x");
-    con.setCredentials("x");
-    try {
-      LifecycleHelper.initAndStart(con);
-      fail();
-    } catch (CoreException expected) {
-
-    } finally {
-      LifecycleHelper.stopAndClose(con);
-    }
-  }
 }

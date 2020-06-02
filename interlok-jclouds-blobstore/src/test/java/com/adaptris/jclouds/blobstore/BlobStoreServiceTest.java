@@ -103,7 +103,9 @@ public class BlobStoreServiceTest extends ServiceCase {
   protected final List retrieveObjectsForSampleConfig() {
     ArrayList result = new ArrayList();
     for (OperationsBuilder b : OperationsBuilder.values()) {
-      result.add(new BlobStoreService(new BlobStoreConnection("aws-s3", exampleClientConfig()), b.build()));
+      result.add(new BlobStoreService(
+          new BlobStoreConnection().withProvider("aws-s3").withConfiguration(exampleClientConfig()),
+          b.build()));
     }
     return result;
   }

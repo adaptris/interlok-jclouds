@@ -36,7 +36,8 @@ public abstract class OperationCase {
   public static BlobStoreConnection createConnection() throws Exception {
     KeyValuePairSet config = new KeyValuePairSet();
     config.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, TempFileUtils.createTrackedDir(config).getCanonicalPath()));
-    BlobStoreConnection c = new BlobStoreConnection("filesystem", config);
+    BlobStoreConnection c =
+        new BlobStoreConnection().withProvider("filesystem").withConfiguration(config);
     return c;
   }
 
