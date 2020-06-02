@@ -78,7 +78,7 @@ import lombok.Setter;
 @XStreamAlias("jclouds-blobstore-connection")
 @DisplayOrder(order =
 {
-    "provider", "identity", "credentials"
+    "provider", "credentialsBuilder", "configuration", "identity", "credentials"
 })
 @ComponentProfile(summary = "Connect via apache jclouds to a pluggable cloud storage provider",
     recommended = {BlobStoreConnection.class}, tag = "blob,s3,azure,backblaze,cloud")
