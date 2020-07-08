@@ -36,7 +36,8 @@ public abstract class OperationCase {
   public static BlobStoreConnection createConnection() throws Exception {
     KeyValuePairSet config = new KeyValuePairSet();
     config.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, TempFileUtils.createTrackedDir(config).getCanonicalPath()));
-    BlobStoreConnection c = new BlobStoreConnection("filesystem", config);
+    BlobStoreConnection c =
+        new BlobStoreConnection().withProvider("filesystem").withConfiguration(config);
     return c;
   }
 
@@ -49,4 +50,11 @@ public abstract class OperationCase {
     builder.payload(content);
     store.putBlob(container, builder.build());
   }
+  
+  public static void createBlobs(BlobStoreContext context, String container, int count, String suffix) {
+    for (int i = 0; i < count; i++) {
+      createBlob(context, container, guid.safeUUID() + suffix, "hello world");
+    }
+  }
+
 }
