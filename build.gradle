@@ -22,7 +22,7 @@ ext {
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.30'
   jcloudsVersion = '2.2.1'
-  mockitoVersion = '3.5.7'
+  mockitoVersion = '3.5.9'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
