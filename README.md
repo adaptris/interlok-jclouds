@@ -9,6 +9,6 @@ This provides interlok services based around apache jclouds (https://jclouds.apa
 
 All the providers supported by jclouds are listed on their [website](https://jclouds.apache.org/reference/providers/). You should use that as the canonical reference. We have tested the blob storage with 3 different providers (the unit tests use the filesystem provider and the operations have been confirmed to work.
 
-- To access AWS-S3 via jclouds you will need to include the artefact `org.apache.jclouds.provider:aws-s3:XYZ` where _XYZ_ is the appropriate version; use the provider `aws-s3`. This was tested for completeness, using the [interlok-aws](https://gitub.com/adaptris/interlok-aws) optional component is generally the better option.
+- To access AWS-S3 via jclouds you will need to include the artefact `org.apache.jclouds.provider:aws-s3:XYZ` where _XYZ_ is the appropriate version; use the provider `aws-s3`. This was tested for completeness, using the [interlok-aws](https://github.com/adaptris/interlok-aws) optional component is generally the better option.
 - To access Backblaze via jclouds you will need to include the artefact `org.apache.jclouds.provider:b2:XYZ` where _XYZ_ is the appropriate version; use the provider `b2`
 - To access MS Azure blob storage via jclouds you will need to include the artefact `org.apache.jclouds.provider:azureblob:XYZ` where _XYZ_ is the appropriate version; use the provider `azureblob`
