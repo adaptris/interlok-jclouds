@@ -1,6 +1,7 @@
 ext {
   componentName='Interlok/Apache jclouds common components'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  jcloudsVersion = '2.2.1'
 }
 
 dependencies {

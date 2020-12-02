@@ -21,7 +21,6 @@ ext {
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.30'
-  jcloudsVersion = '2.2.1'
   mockitoVersion = '3.6.28'
 }
 
