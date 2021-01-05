@@ -6,7 +6,7 @@ ext {
 
 dependencies {
   compile ("org.apache.jclouds:jclouds-core:$jcloudsVersion")
-  compile ("com.google.guava:guava:30.0-jre")
+  compile ("com.google.guava:guava:30.1-jre")
   testImplementation "org.apache.jclouds.api:filesystem:$jcloudsVersion"
 }
 
