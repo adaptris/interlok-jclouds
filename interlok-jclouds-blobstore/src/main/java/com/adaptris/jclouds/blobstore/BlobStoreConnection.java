@@ -95,7 +95,7 @@ public class BlobStoreConnection extends JcloudsConnection {
   @Setter
   @InputFieldHint(style = "PASSWORD", external = true)
   @Deprecated
-  @Removal(version = "3.12.0", message = "use a credentials-builder instead")
+  @Removal(version = "4.0.0", message = "use a credentials-builder instead")
   private String identity;
   /**
    * Set any credentials that are required, generally the secret key.
@@ -107,7 +107,7 @@ public class BlobStoreConnection extends JcloudsConnection {
   @Setter
   @InputFieldHint(style = "PASSWORD", external = true)
   @Deprecated
-  @Removal(version = "3.12.0", message = "use a credentials-builder instead")
+  @Removal(version = "4.0.0", message = "use a credentials-builder instead")
   private String credentials;
 
   private transient BlobStoreContext context;
