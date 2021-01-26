@@ -1,12 +1,14 @@
 ext {
   componentName='Interlok/Apache jclouds blobstore'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  jcloudsVersion = '2.2.1'
 }
 
 dependencies {
   compile project(":interlok-jclouds-common")
   compile ("org.apache.jclouds:jclouds-blobstore:$jcloudsVersion")
   testImplementation "org.apache.jclouds.api:filesystem:$jcloudsVersion"
+  testImplementation "org.apache.jclouds.provider:azureblob:$jcloudsVersion"
 }
 
 
@@ -59,7 +61,7 @@ publishing {
         properties.appendNode("license", "false")
         properties.appendNode("externalUrl", "https://jclouds.apache.org/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok-jclouds/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok-jclouds")   
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-jclouds")
       }
     }
   }
@@ -84,4 +86,3 @@ task deleteGeneratedFiles(type: Delete) {
 
 clean.dependsOn deleteGeneratedFiles
 javadoc.dependsOn offlinePackageList
-
