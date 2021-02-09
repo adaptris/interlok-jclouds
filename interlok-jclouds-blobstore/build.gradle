@@ -7,6 +7,10 @@ ext {
 dependencies {
   compile project(":interlok-jclouds-common")
   compile ("org.apache.jclouds:jclouds-blobstore:$jcloudsVersion")
+
+  compile ("javax.xml.bind:jaxb-api:2.3.1")
+//  compile ("jakarta.xml.bind:jakarta.xml.bind-api-parent:3.0.0")
+
   testImplementation "org.apache.jclouds.api:filesystem:$jcloudsVersion"
   testImplementation "org.apache.jclouds.provider:azureblob:$jcloudsVersion"
 }
