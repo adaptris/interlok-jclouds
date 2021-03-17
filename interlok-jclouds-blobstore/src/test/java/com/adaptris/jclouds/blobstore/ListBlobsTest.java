@@ -129,7 +129,6 @@ public class ListBlobsTest extends OperationCase {
 
     BlobStoreConnection con = mock(BlobStoreConnection.class);
     BlobStore blobstore = mock(BlobStore.class);
-    Set<StorageMetadata> wrappedList = createBlobList();
     MyPageSet bloblist = new MyPageSet(createBlobList());
     when(con.retrieveConnection(any())).thenReturn(con);
     when(con.getBlobStore(any())).thenReturn(blobstore);
@@ -154,13 +153,13 @@ public class ListBlobsTest extends OperationCase {
   private Set<StorageMetadata> createBlobList() {
     HashSet<StorageMetadata> result = new HashSet<>();
     result.add(new StorageMetadataImpl(StorageType.FOLDER, null, "myFolder", null, null, null,
-        new Date(), new Date(), Collections.EMPTY_MAP, 0L, Tier.STANDARD));
+        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
     result.add(new StorageMetadataImpl(StorageType.BLOB, null, "jsonfile.json", null, null, null,
-        new Date(), new Date(), Collections.EMPTY_MAP, 0L, Tier.STANDARD));
+        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
     result.add(new StorageMetadataImpl(StorageType.BLOB, null, "file.csv", null, null, null,
-        new Date(), new Date(), Collections.EMPTY_MAP, 0L, Tier.STANDARD));
+        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
     result.add(new StorageMetadataImpl(StorageType.BLOB, null, "README.txt", null, null, null,
-        new Date(), new Date(), Collections.EMPTY_MAP, 0L, Tier.STANDARD));
+        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
     return result;
   }
 

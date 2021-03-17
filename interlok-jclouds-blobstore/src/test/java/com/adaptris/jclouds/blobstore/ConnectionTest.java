@@ -16,26 +16,32 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.junit.Assert.fail;
-import org.jclouds.blobstore.BlobStore;
+
 import org.jclouds.blobstore.BlobStoreContext;
 import org.junit.Test;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.jclouds.common.CredentialsBuilder;
+import com.adaptris.jclouds.common.DefaultCredentialsBuilder;
 
 public class ConnectionTest extends OperationCase {
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testConnection_LegacyCredentials() throws Exception {
-    String name = guid.safeUUID();
     String container = guid.safeUUID();
+    
+    CredentialsBuilder credentialsBuilder = new DefaultCredentialsBuilder()
+            .withIdentity("x")
+            .withCredentials("x");
+
     BlobStoreConnection con = createConnection();
-    con.setIdentity("x");
-    con.setCredentials("x");
+    con.setCredentialsBuilder(credentialsBuilder);
+    
     LifecycleHelper.initAndStart(con);
     try {
       BlobStoreContext ctx = con.getBlobStoreContext();
-      BlobStore store = ctx.getBlobStore();
+      ctx.getBlobStore();
       con.getBlobStore(container);
       fail();
     } catch (CoreException expected) {

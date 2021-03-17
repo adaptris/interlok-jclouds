@@ -25,7 +25,7 @@ public class RemoteBlobIterableTest extends OperationCase {
       int count = 0;
       assertTrue(i.hasNext());
       while (i.hasNext()) {
-        RemoteBlob blob = i.next();
+        i.next();
         count++;        
       }
       assertEquals(10, count);
