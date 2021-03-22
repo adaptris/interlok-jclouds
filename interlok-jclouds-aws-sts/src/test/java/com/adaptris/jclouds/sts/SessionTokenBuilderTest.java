@@ -16,9 +16,10 @@
 package com.adaptris.jclouds.sts;
 
 import static org.junit.Assert.assertNotNull;
+
 import org.jclouds.domain.Credentials;
 import org.junit.Test;
-import com.adaptris.jclouds.sts.SessionTokenCredentialsBuilder;
+
 import com.adaptris.security.exc.PasswordException;
 import com.google.common.base.Supplier;
 
