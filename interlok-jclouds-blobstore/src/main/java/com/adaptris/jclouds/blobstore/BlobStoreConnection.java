@@ -15,29 +15,19 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import java.util.Optional;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
-import com.adaptris.annotation.AdvancedConfig;
+
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.jclouds.common.CredentialsBuilder;
-import com.adaptris.jclouds.common.DefaultCredentialsBuilder;
 import com.adaptris.jclouds.common.JcloudsConnection;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import lombok.Getter;
+
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Interacting with cloud storage via apache jclouds.
@@ -85,35 +75,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BlobStoreConnection extends JcloudsConnection {
 
-  /**
-   * Set the identity used to connect to the storage provider, generally the access key.
-   * 
-   * @deprecated since 3.10.2 use a {@code CredentialsBuilder} instead.
-   */
-  @AdvancedConfig(rare = true)
-  @Getter
-  @Setter
-  @InputFieldHint(style = "PASSWORD", external = true)
-  @Deprecated
-  @Removal(version = "4.0.0", message = "use a credentials-builder instead")
-  private String identity;
-  /**
-   * Set any credentials that are required, generally the secret key.
-   * 
-   * @deprecated since 3.10.2 use a {@code CredentialsBuilder} instead.
-   */
-  @AdvancedConfig(rare = true)
-  @Getter
-  @Setter
-  @InputFieldHint(style = "PASSWORD", external = true)
-  @Deprecated
-  @Removal(version = "4.0.0", message = "use a credentials-builder instead")
-  private String credentials;
-
   private transient BlobStoreContext context;
   private transient BlobStore blobStore;
-  private transient boolean credentialsWarningLogged;
-  private transient Optional<CredentialsBuilder> legacyCredentials;
 
   protected BlobStoreContext getBlobStoreContext() {
     return context;
@@ -125,19 +88,6 @@ public class BlobStoreConnection extends JcloudsConnection {
     }
     return blobStore;
   }
-
-  @Override
-  protected void prepareConnection() throws CoreException {
-    super.prepareConnection();
-    if (BooleanUtils.or(new boolean[] {isNotBlank(getCredentials()), isNotBlank(getIdentity())})) {
-      LoggingHelper.logWarning(credentialsWarningLogged, () -> credentialsWarningLogged = true,
-          "[{}] uses static credentials/identity, use a credentials-builder instead",
-          LoggingHelper.friendlyName(this));
-      legacyCredentials = Optional.of(new DefaultCredentialsBuilder().withCredentials(getCredentials())
-              .withIdentity(getIdentity()));
-    }
-  }
-
 
   @Override
   protected void initConnection() throws CoreException {
@@ -156,16 +106,10 @@ public class BlobStoreConnection extends JcloudsConnection {
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   protected void closeConnection() {
-    IOUtils.closeQuietly(context);
+    IOUtils.closeQuietly(context, null);
     blobStore = null;
     context = null;
-  }
-
-  @Override
-  protected Optional<CredentialsBuilder> credentialsBuilder() {
-    return ObjectUtils.defaultIfNull(legacyCredentials, super.credentialsBuilder());
   }
 
 }

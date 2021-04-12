@@ -15,9 +15,9 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -36,7 +36,7 @@ public class CheckExistsTest extends OperationCase {
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
-      BlobStore store = ctx.getBlobStore();
+      ctx.getBlobStore();
       createBlob(ctx, container, name, "hello world");
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
       service.doService(msg);
@@ -54,7 +54,7 @@ public class CheckExistsTest extends OperationCase {
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
-      BlobStore store = ctx.getBlobStore();
+      ctx.getBlobStore();
       createBlob(ctx, container, name, "hello world");
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
       service.doService(msg);

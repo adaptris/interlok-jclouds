@@ -19,23 +19,23 @@ import static com.adaptris.jclouds.blobstore.OperationCase.createBlob;
 import static com.adaptris.jclouds.blobstore.OperationCase.createConnection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.StringReader;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.cloud.RemoteBlobFilterWrapper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class ListBlobServiceTest extends ServiceCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class ListBlobServiceTest extends ExampleServiceCase {
+
   @Test
   public void testService() throws Exception {
     String container = OperationCase.guid.safeUUID();

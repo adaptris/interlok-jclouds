@@ -16,16 +16,19 @@
 package com.adaptris.jclouds.blobstore;
 
 import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
+
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class BlobStoreServiceTest extends ServiceCase {
+public class BlobStoreServiceTest extends ExampleServiceCase {
   private static final String HYPHEN = "-";
 
   private enum OperationsBuilder {
@@ -69,10 +72,7 @@ public class BlobStoreServiceTest extends ServiceCase {
     };
     abstract Operation build();
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
   @Test
   public void testLifecycle() throws Exception {
     BlobStoreService service = new BlobStoreService();
@@ -100,8 +100,8 @@ public class BlobStoreServiceTest extends ServiceCase {
   }
 
   @Override
-  protected final List retrieveObjectsForSampleConfig() {
-    ArrayList result = new ArrayList();
+  protected final List<?> retrieveObjectsForSampleConfig() {
+    ArrayList<BlobStoreService> result = new ArrayList<>();
     for (OperationsBuilder b : OperationsBuilder.values()) {
       result.add(new BlobStoreService(
           new BlobStoreConnection().withProvider("aws-s3").withConfiguration(exampleClientConfig()),

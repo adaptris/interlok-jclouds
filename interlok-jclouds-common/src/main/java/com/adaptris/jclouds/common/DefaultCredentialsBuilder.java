@@ -1,12 +1,16 @@
 package com.adaptris.jclouds.common;
 
 import org.jclouds.domain.Credentials;
+
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.google.common.base.Supplier;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -16,6 +20,8 @@ import lombok.SneakyThrows;
  *
  */
 @XStreamAlias("jclouds-default-credentials-builder")
+@DisplayOrder(order = { "identity", "credentials" })
+@ComponentProfile(summary = "Provide credentials")
 public class DefaultCredentialsBuilder implements CredentialsBuilder {
   /**
    * Set the identity used to connect to the storage provider, generally the access key.
