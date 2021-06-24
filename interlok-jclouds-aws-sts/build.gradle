@@ -6,8 +6,8 @@ ext {
 }
 
 dependencies {
-  compile project(":interlok-jclouds-common")
-  compile ("org.apache.jclouds.api:sts:$jcloudsVersion")
+  api project(":interlok-jclouds-common")
+  api ("org.apache.jclouds.api:sts:$jcloudsVersion")
 }
 
 
