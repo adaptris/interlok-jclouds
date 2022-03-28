@@ -2,7 +2,7 @@ ext {
   componentName='Interlok JClouds/Blobstore'
   componentDesc="Use Apache jclouds to access your cloud storage"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jcloudsVersion = '2.4.0'
+  jcloudsVersion = '2.5.0'
 }
 
 dependencies {
