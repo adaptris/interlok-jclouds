@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,13 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.io.StringReader;
 import java.util.AbstractSet;
 import java.util.Collections;
@@ -29,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.SystemUtils;
@@ -38,8 +41,8 @@ import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.domain.StorageType;
 import org.jclouds.blobstore.domain.Tier;
 import org.jclouds.blobstore.domain.internal.StorageMetadataImpl;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
@@ -47,14 +50,12 @@ import com.adaptris.interlok.cloud.RemoteBlobFilterWrapper;
 
 public class ListBlobsTest extends OperationCase {
 
-
   @Test
   public void testList_NoFilter() throws Exception {
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con,
-            new ListOperation().withPrefix("").withFilter(null).withOutputStyle(null).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con,
+        new ListOperation().withPrefix("").withFilter(null).withOutputStyle(null).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, "jsonfile.json", "hello world");
@@ -75,11 +76,11 @@ public class ListBlobsTest extends OperationCase {
   // Works fine in WSL + mac ; as a result, we stick an Assumption in for Linux...
   @Test
   public void testList_WithPrefix_IgnoredOnWindows() throws Exception {
-    Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
+    assumeFalse(SystemUtils.IS_OS_WINDOWS);
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con, new ListOperation().withPrefix("prefix/").withOutputStyle(null).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con,
+        new ListOperation().withPrefix("prefix/").withOutputStyle(null).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, "jsonfile.json", "hello world");
@@ -101,12 +102,9 @@ public class ListBlobsTest extends OperationCase {
   public void testList_Filtering() throws Exception {
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con, new ListOperation().withPrefix("")
-            .withFilter(
-                new RemoteBlobFilterWrapper().withFilterExpression(".*\\.json")
-                    .withFilterImp(RegexFileFilter.class.getCanonicalName()))
-            .withOutputStyle(null).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con, new ListOperation().withPrefix("")
+        .withFilter(new RemoteBlobFilterWrapper().withFilterExpression(".*\\.json").withFilterImp(RegexFileFilter.class.getCanonicalName()))
+        .withOutputStyle(null).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, "jsonfile.json", "hello world");
@@ -134,8 +132,7 @@ public class ListBlobsTest extends OperationCase {
     when(con.getBlobStore(any())).thenReturn(blobstore);
     doReturn(bloblist).when(blobstore).list(any(), any());
 
-    BlobStoreService service =
-        new BlobStoreService(con, new ListOperation().withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con, new ListOperation().withContainerName(container));
 
     try {
       LifecycleHelper.initAndStart(service);
@@ -152,19 +149,18 @@ public class ListBlobsTest extends OperationCase {
 
   private Set<StorageMetadata> createBlobList() {
     HashSet<StorageMetadata> result = new HashSet<>();
-    result.add(new StorageMetadataImpl(StorageType.FOLDER, null, "myFolder", null, null, null,
-        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
-    result.add(new StorageMetadataImpl(StorageType.BLOB, null, "jsonfile.json", null, null, null,
-        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
-    result.add(new StorageMetadataImpl(StorageType.BLOB, null, "file.csv", null, null, null,
-        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
-    result.add(new StorageMetadataImpl(StorageType.BLOB, null, "README.txt", null, null, null,
-        new Date(), new Date(), Collections.emptyMap(), 0L, Tier.STANDARD));
+    result.add(new StorageMetadataImpl(StorageType.FOLDER, null, "myFolder", null, null, null, new Date(), new Date(),
+        Collections.emptyMap(), 0L, Tier.STANDARD));
+    result.add(new StorageMetadataImpl(StorageType.BLOB, null, "jsonfile.json", null, null, null, new Date(), new Date(),
+        Collections.emptyMap(), 0L, Tier.STANDARD));
+    result.add(new StorageMetadataImpl(StorageType.BLOB, null, "file.csv", null, null, null, new Date(), new Date(), Collections.emptyMap(),
+        0L, Tier.STANDARD));
+    result.add(new StorageMetadataImpl(StorageType.BLOB, null, "README.txt", null, null, null, new Date(), new Date(),
+        Collections.emptyMap(), 0L, Tier.STANDARD));
     return result;
   }
 
-  private class MyPageSet extends AbstractSet<StorageMetadata>
-      implements PageSet<StorageMetadata> {
+  private class MyPageSet extends AbstractSet<StorageMetadata> implements PageSet<StorageMetadata> {
     private Set<StorageMetadata> set;
     private AtomicBoolean isFinished = new AtomicBoolean(false);
 
@@ -190,4 +186,5 @@ public class ListBlobsTest extends OperationCase {
       return set.size();
     }
   }
+
 }
