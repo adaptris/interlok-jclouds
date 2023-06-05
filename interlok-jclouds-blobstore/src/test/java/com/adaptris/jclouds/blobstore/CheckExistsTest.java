@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,10 @@
 */
 package com.adaptris.jclouds.blobstore;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.jclouds.blobstore.BlobStoreContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -25,14 +27,12 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class CheckExistsTest extends OperationCase {
 
-
   @Test
   public void testExists() throws Exception {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con, new CheckExists().withName(name).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con, new CheckExists().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       BlobStoreContext ctx = con.getBlobStoreContext();
@@ -45,7 +45,7 @@ public class CheckExistsTest extends OperationCase {
     }
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testExists_NonExistent() throws Exception {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
@@ -57,7 +57,7 @@ public class CheckExistsTest extends OperationCase {
       ctx.getBlobStore();
       createBlob(ctx, container, name, "hello world");
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
-      service.doService(msg);
+      assertThrows(ServiceException.class, () -> service.doService(msg));
     } finally {
       LifecycleHelper.stopAndClose(service);
     }
