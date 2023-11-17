@@ -15,12 +15,12 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
@@ -38,7 +38,6 @@ public class BlobStoreServiceTest extends ExampleServiceCase {
         return new ListOperation()
             .withContainerName("s3-bucket");
       }
-
     },
     Copy {
       @Override
@@ -48,7 +47,6 @@ public class BlobStoreServiceTest extends ExampleServiceCase {
             .withDestinationName("%message{s3-target-key}")
             .withName("%message{s3-key}").withContainerName("s3-src-bucket");
       }
-      
     },
     Download {
       @Override
@@ -56,7 +54,6 @@ public class BlobStoreServiceTest extends ExampleServiceCase {
         return new Download().withTempDirectory("/path/to/temp/dir/if/required")
             .withName("%message{s3-key}").withContainerName("s3-bucket");
       }
-
     },
     Remove {
       @Override
@@ -70,6 +67,7 @@ public class BlobStoreServiceTest extends ExampleServiceCase {
         return new Upload().withName("%message{s3-key}").withContainerName("s3-bucket");
       }
     };
+    
     abstract Operation build();
   }
 
@@ -122,4 +120,5 @@ public class BlobStoreServiceTest extends ExampleServiceCase {
     return super.createBaseFileName(object) + HYPHEN + ((BlobStoreService) object).getOperation().getClass().getSimpleName();
   }
 
+  
 }

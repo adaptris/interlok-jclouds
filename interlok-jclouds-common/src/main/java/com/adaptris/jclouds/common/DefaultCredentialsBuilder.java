@@ -60,4 +60,5 @@ public class DefaultCredentialsBuilder implements CredentialsBuilder {
     setCredentials(s);
     return (T) this;
   }
+
 }

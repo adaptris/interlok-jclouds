@@ -1,6 +1,12 @@
 # interlok-jclouds
 
-[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-jclouds.svg)](https://github.com/adaptris/interlok-jclouds/tags) [![codecov](https://codecov.io/gh/adaptris/interlok-jclouds/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok-jclouds) [![Total alerts](https://img.shields.io/lgtm/alerts/g/adaptris/interlok-jclouds.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok-jclouds/alerts/) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/adaptris/interlok-jclouds.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok-jclouds/context:java)
+[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-jclouds.svg)](https://github.com/adaptris/interlok-jclouds/tags)
+[![license](https://img.shields.io/github/license/adaptris/interlok-jclouds.svg)](https://github.com/adaptris/interlok-jclouds/blob/develop/LICENSE)
+[![Actions Status](https://github.com/adaptris/interlok-jclouds/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/adaptris/interlok-jclouds/actions)
+[![codecov](https://codecov.io/gh/adaptris/interlok-jclouds/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok-jclouds)
+[![CodeQL](https://github.com/adaptris/interlok-jclouds/workflows/CodeQL/badge.svg)](https://github.com/adaptris/interlok-jclouds/security/code-scanning)
+[![Known Vulnerabilities](https://snyk.io/test/github/adaptris/interlok-jclouds/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/adaptris/interlok-jclouds?targetFile=build.gradle)
+[![Closed PRs](https://img.shields.io/github/issues-pr-closed/adaptris/interlok-jclouds)](https://github.com/adaptris/interlok-jclouds/pulls?q=is%3Apr+is%3Aclosed)
 
 
 The suggested name was `fantastic-train`

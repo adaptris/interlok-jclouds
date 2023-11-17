@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,18 +15,22 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
+
 import org.apache.commons.io.FileUtils;
 import org.jclouds.blobstore.BlobStore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -45,8 +49,7 @@ public class DownloadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con, new Download().withName(name).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con, new Download().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
@@ -65,9 +68,8 @@ public class DownloadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con,
-            new OverrideDownloadBlob("hello world").withName(name).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con,
+        new OverrideDownloadBlob("hello world").withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
@@ -84,10 +86,8 @@ public class DownloadTest extends OperationCase {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con,
-            new Download().withTempDirectory(FileUtils.getTempDirectoryPath())
-                .withName(name).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con,
+        new Download().withTempDirectory(FileUtils.getTempDirectoryPath()).withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
@@ -115,21 +115,17 @@ public class DownloadTest extends OperationCase {
 
   }
 
-
-  @Test(expected = ServiceException.class)
+  @Test
   public void testDownload_Error() throws Exception {
     String name = guid.safeUUID();
     String container = guid.safeUUID();
     BlobStoreConnection con = createConnection();
-    BlobStoreService service =
-        new BlobStoreService(con, new Download().withName(name).withContainerName(container));
+    BlobStoreService service = new BlobStoreService(con, new Download().withName(name).withContainerName(container));
     try {
       LifecycleHelper.initAndStart(service);
       createBlob(con.getBlobStoreContext(), container, name, "hello world");
-      AdaptrisMessage msg =
-          new DefectiveMessageFactory(EnumSet.of(WhenToBreak.OUTPUT, WhenToBreak.INPUT))
-              .newMessage("");
-      service.doService(msg);
+      AdaptrisMessage msg = new DefectiveMessageFactory(EnumSet.of(WhenToBreak.OUTPUT, WhenToBreak.INPUT)).newMessage("");
+      assertThrows(ServiceException.class, () -> service.doService(msg));
     } finally {
       LifecycleHelper.stopAndClose(service);
     }
@@ -155,8 +151,7 @@ public class DownloadTest extends OperationCase {
     OverrideTempFile download = new OverrideTempFile(file);
 
     BlobStore blobstore = Mockito.mock(BlobStore.class);
-    Mockito.doThrow(new UnsupportedOperationException()).when(blobstore).downloadBlob(any(), any(),
-        (File) any());
+    Mockito.doThrow(new UnsupportedOperationException()).when(blobstore).downloadBlob(any(), any(), (File) any());
     assertFalse(download.tryDownloadBlob(blobstore, "container", "name", msg));
   }
 
@@ -184,11 +179,11 @@ public class DownloadTest extends OperationCase {
     }
 
     @Override
-    protected boolean tryDownloadBlob(BlobStore store, String container, String name,
-        AdaptrisMessage msg)
+    protected boolean tryDownloadBlob(BlobStore store, String container, String name, AdaptrisMessage msg)
         throws InterlokException, IOException {
       msg.setContent(payload, Charset.defaultCharset().name());
       return true;
     }
   }
+
 }

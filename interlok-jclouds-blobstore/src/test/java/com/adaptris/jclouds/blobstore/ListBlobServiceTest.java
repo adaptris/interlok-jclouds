@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,18 +14,19 @@
  * limitations under the License.
 */
 package com.adaptris.jclouds.blobstore;
+
 import static com.adaptris.jclouds.blobstore.BlobStoreServiceTest.exampleClientConfig;
 import static com.adaptris.jclouds.blobstore.OperationCase.createBlob;
 import static com.adaptris.jclouds.blobstore.OperationCase.createConnection;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.StringReader;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -41,9 +42,7 @@ public class ListBlobServiceTest extends ExampleServiceCase {
     String container = OperationCase.guid.safeUUID();
     BlobStoreConnection con = createConnection();
 
-    ListBlobs service =
-        new ListBlobs().withConnection(con).withOutputStyle(null)
-        .withContainer(container);
+    ListBlobs service = new ListBlobs().withConnection(con).withOutputStyle(null).withContainer(container);
     // Since the service does the lifecycle; we have do bootstrap the connection manually
     // so we can use it
     LifecycleHelper.initAndStart(con);
@@ -67,11 +66,9 @@ public class ListBlobServiceTest extends ExampleServiceCase {
   @Test
   public void testService_Failure() throws Exception {
     String container = OperationCase.guid.safeUUID();
-    BlobStoreConnection con =
-        new BlobStoreConnection().withProvider("how-can-this-provider-exist");
+    BlobStoreConnection con = new BlobStoreConnection().withProvider("how-can-this-provider-exist");
 
-    ListBlobs service =
-        new ListBlobs().withConnection(con).withOutputStyle(null).withContainer(container);
+    ListBlobs service = new ListBlobs().withConnection(con).withOutputStyle(null).withContainer(container);
     try {
       LifecycleHelper.initAndStart(service);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
@@ -88,13 +85,9 @@ public class ListBlobServiceTest extends ExampleServiceCase {
   @Override
   protected ListBlobs retrieveObjectForSampleConfig() {
     try {
-      return new ListBlobs()
-          .withConnection(new BlobStoreConnection().withProvider("aws-s3")
-              .withConfiguration(exampleClientConfig()))
+      return new ListBlobs().withConnection(new BlobStoreConnection().withProvider("aws-s3").withConfiguration(exampleClientConfig()))
           .withContainer("s3-bucket").withPrefix("prefix/or/path/if/you/prefer/")
-          .withFilter(
-              new RemoteBlobFilterWrapper().withFilterExpression(".*")
-              .withFilterImp(RegexFileFilter.class.getCanonicalName()));
+          .withFilter(new RemoteBlobFilterWrapper().withFilterExpression(".*").withFilterImp(RegexFileFilter.class.getCanonicalName()));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

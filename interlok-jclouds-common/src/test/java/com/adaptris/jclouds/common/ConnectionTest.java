@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,14 @@
 */
 package com.adaptris.jclouds.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.jclouds.filesystem.reference.FilesystemConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.LifecycleHelper;
@@ -55,8 +57,7 @@ public class ConnectionTest {
 
   @Test
   public void testLifecycle_WithCredentials() throws Exception {
-    JcloudsConnection con = createConnection()
-        .withCredentials(new DefaultCredentialsBuilder().withCredentials("c").withIdentity("i"));
+    JcloudsConnection con = createConnection().withCredentials(new DefaultCredentialsBuilder().withCredentials("c").withIdentity("i"));
     try {
       LifecycleHelper.initAndStart(con);
       assertTrue(con.credentialsBuilder().isPresent());
@@ -69,11 +70,8 @@ public class ConnectionTest {
 
   public static JcloudsConnection createConnection() throws Exception {
     KeyValuePairSet config = new KeyValuePairSet();
-    config.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR,
-        TempFileUtils.createTrackedDir(config).getCanonicalPath()));
-    MyJcloudsConnection c =
-        new MyJcloudsConnection().withConfiguration(config).withCredentials(null)
-            .withProvider("filesystem");
+    config.add(new KeyValuePair(FilesystemConstants.PROPERTY_BASEDIR, TempFileUtils.createTrackedDir(config).getCanonicalPath()));
+    MyJcloudsConnection c = new MyJcloudsConnection().withConfiguration(config).withCredentials(null).withProvider("filesystem");
     return c;
   }
 
