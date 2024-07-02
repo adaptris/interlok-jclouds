@@ -2,12 +2,12 @@ ext {
   componentName='Interlok JClouds/Common'
   componentDesc="Common classes for interacting with cloud providers via Apache JClouds"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jcloudsVersion = '2.5.0'
+  jcloudsVersion = '2.6.0'
 }
 
 dependencies {
   api ("org.apache.jclouds:jclouds-core:$jcloudsVersion")
-  api ("com.google.guava:guava:33.0.0-jre")
+  api ("com.google.guava:guava:33.2.0-jre")
   testImplementation "org.apache.jclouds.api:filesystem:$jcloudsVersion"
 }
 
