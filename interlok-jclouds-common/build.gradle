@@ -2,7 +2,7 @@ ext {
   componentName='Interlok JClouds/Common'
   componentDesc="Common classes for interacting with cloud providers via Apache JClouds"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jcloudsVersion = '2.6.0'
+  jcloudsVersion = '2.7.0'
 }
 
 dependencies {
