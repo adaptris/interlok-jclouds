@@ -20,6 +20,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jclouds.blobstore.BlobStore;
@@ -92,7 +94,7 @@ public class Download extends OperationImpl {
   }
 
   protected File tempFile() throws IOException {
-    File tempDir = StringUtils.isBlank(getTempDirectory()) ? null : new File(getTempDirectory());
+    File tempDir = StringUtils.isBlank(getTempDirectory()) ? null : FsHelper.toFile(getTempDirectory(), new File(getTempDirectory()));
     return File.createTempFile(this.getClass().getSimpleName(), "", tempDir);
   }
 
