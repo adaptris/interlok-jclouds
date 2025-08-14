@@ -1,6 +1,6 @@
 package com.adaptris.jclouds.blobstore;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.jclouds.blobstore.options.ListContainerOptions;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
