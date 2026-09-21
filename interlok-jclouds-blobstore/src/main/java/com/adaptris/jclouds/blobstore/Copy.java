@@ -15,7 +15,7 @@
 */
 package com.adaptris.jclouds.blobstore;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jclouds.blobstore.BlobStore;
