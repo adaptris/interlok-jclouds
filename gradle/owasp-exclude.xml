@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-119724 affects all Apache jclouds versions, including 2.7.0.
+      Advisory: https://www.openwall.com/lists/oss-security/2026/11/02/3
+      Apache has retired jclouds and explicitly plans no fixed release; Maven Central's
+      latest release is 2.7.0. No minor/patch upgrade (or major upgrade) fixes this issue.
+      Accepted risk, not remediated: malicious provider XML responses can cause entity
+      expansion/XXE, information disclosure and denial of service. Restrict access to
+      trusted users and trusted provider endpoints pending migration to an alternative.
+    ]]></notes>
+    <packageUrl>pkg:maven/org.apache.jclouds/jclouds-core@2.7.0</packageUrl>
+    <vulnerabilityName>CVE-2026-119724</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-123356 is incorrectly attributed to jetty-server 10.0.26 by OSS Index.
+      Advisory: https://github.com/grobidOrg/grobid/security/advisories/GHSA-g2r5-4c8r-c84f
+      Affected software is GROBID before 0.9.1: its /api/modelTraining endpoint leaks
+      executor threads in GrobidRestProcessTraining, not Jetty server code.
+      GROBID 0.9.1 fixes that application; no Jetty minor/patch upgrade addresses it.
+      GROBID is not a dependency of these modules. This is a false positive, not an
+      accepted Jetty vulnerability; unrelated Jetty risks remain separately governed
+      by the existing shared suppression file.
+    ]]></notes>
+    <packageUrl>pkg:maven/org.eclipse.jetty/jetty-server@10.0.26</packageUrl>
+    <vulnerabilityName>CVE-2026-123356</vulnerabilityName>
+  </suppress>
+</suppressions>
