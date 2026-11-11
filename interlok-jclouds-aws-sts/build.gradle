@@ -2,12 +2,11 @@ ext {
   componentName='Interlok JClouds/AWS STS'
   componentDesc="Connect using Apache JClouds to AWS Services using AWS Secure Token Service"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  jcloudsVersion = '2.7.0'
 }
 
 dependencies {
   api project(":interlok-jclouds-common")
-  api ("org.apache.jclouds.api:sts:$jcloudsVersion")
+  api ("org.apache.jclouds.api:sts")
 }
 
 
